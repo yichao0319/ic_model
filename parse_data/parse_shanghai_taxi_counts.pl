@@ -15,6 +15,7 @@
 use strict;
 use POSIX;
 use List::Util qw(first max maxstr min minstr reduce shuffle sum);
+use Math::Trig qw(deg2rad pi great_circle_distance asin acos);
 # use lib "/u/yichao/utils/perl";
 # use lib "../utils";
 
@@ -175,7 +176,9 @@ foreach my $this_car (keys %trace) {
             # print "  idx$tidx/".@times.": interp time=$interp_time [$interpx, $interpy]\n";
             
             $tidx ++;
+            last if($tidx >= @times);
         }
+        last if($tidx >= @times);
         
         if($this_time == $times[$tidx]) {
             $new_trace{$this_car}{TIME}{$this_time}{X} = $thisx;
@@ -199,7 +202,7 @@ print "Find contact counts\n" if($DEBUG2);
 my @counts;
 my @cars = sort {$a <=> $b} keys %new_trace;
 foreach my $this_time (@times) {
-    print "  time = $this_time/".@times."\n";
+    print "  time = ".(($this_time-$times[0]) / $itvl)."/".@times."\n";
     foreach my $ci (0..@cars-1) {
         my $thisx1 = 0;
         my $thisy1 = 0;
