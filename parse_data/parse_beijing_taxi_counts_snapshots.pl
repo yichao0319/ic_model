@@ -31,8 +31,8 @@ my $DEBUG3 = 0; ## print output
 #############
 # Constants
 #############
-my $input_dir  = "./raw_sf_taxi";
-my $output_dir = "./processed_sf_taxi";
+my $input_dir  = "./raw_beijing_taxi";
+my $output_dir = "./processed_beijing_taxi";
 # my $filename = "bus";
 
 #############
@@ -69,30 +69,61 @@ my $range = $ARGV[1] + 0;
 #############
 ## read directory
 #############
+print "read directory\n" if($DEBUG2);
+
+my $cnt = 0;
+# my $init_time = -1;
+# my $end_time = -1;
 opendir(my $dh, $input_dir) || die $!;
 while(readdir $dh) {
     chomp;
-    if($_ =~ /(new_\w*)\.txt/) {
+    if($_ =~ /(\d+)\.txt/) {
         my $filename = $1;
         print "  $filename\n" if($DEBUG3);
+        print "  $cnt / 10336\n" if($DEBUG3);
+
+        #############
+        ## DEBUG
+        $cnt ++;
+        # last if($cnt > 2000);
+        #############
 
         #############
         ## Read Data
         #############
         # print "Read Data\n" if($DEBUG2);
         
+        # my $this_init_time = -1;
+        # my $this_end_time;
         open FH, "$input_dir/$filename.txt" or die $!;
         while(<FH>) {
             print $_ if($DEBUG3);
             chomp;
-            my @data = split(/\s+/, $_);
-            my $car = $filename;
-            my $lat = $data[0] + 0;
-            my $lng = $data[1] + 0;
-            my $occ = $data[2] + 0;
-            my $time = $data[3] + 0;
+            my @data = split(/,/, $_);
+            my $timestr = $data[1];
+            my $car = $data[0]+0;
+            my $lat = $data[3]+0;
+            my $lng = $data[2]+0;
 
-            $times{$time} = 1;
+            my $time = 0;
+            if($timestr =~ /(\d+)-(\d+)-(\d+)\s+(\d+):(\d+):(\d+)/) {
+                my $year = $1+0;
+                my $mon = $2+0;
+                my $day = $3+0;
+                my $hour = $4+0;
+                my $min = $5+0;
+                my $sec = $6+0;
+
+                $time = (((get_month_cumdays($mon-1) + $day)*24 + $hour)*60 + $min)*60 + $sec;
+                $times{$time} = 1;
+
+                # if($this_init_time == -1) {
+                #     $this_init_time = $time;
+                # }
+                # $this_end_time = $time;
+            }
+            else { die "Wrong Time Format: $timestr"; }
+
 
             print "  car $car [$lat, $lng] at $time\n" if($DEBUG3);
             # $trace{$car}{$time}{X} = $lat;
@@ -102,43 +133,39 @@ while(readdir $dh) {
 
         }
         close FH;
+
+        # if($this_init_time > $init_time or $init_time == -1) {
+        #     $init_time = $this_init_time;
+        # }
+        # if($this_end_time < $end_time or $end_time == -1) {
+        #     $end_time = $this_end_time;
+        # }
     }
 }
 closedir $dh;
 
-# exit
-# print "  #car = ".(scalar keys %trace)."\n";
-# foreach my $this_car (sort {$a <=> $b} keys %trace) {
-#     next if (scalar (keys %{$trace{$this_car}}) < 1000);
 
-#     open FH, "> $output_dir/cars/$this_car.txt" or die $!;
-#     foreach my $this_time (sort {$a <=> $b} keys %{$trace{$this_car}}) {
-#         print FH "$this_time, ".$trace{$this_car}{$this_time}{X}.", ".$trace{$this_car}{$this_time}{Y}."\n";
-#     }
-#     close FH;
+#############
+## get snapshots
+#############
+print "Interpolation\n" if($DEBUG2);
 
-#     my @tmp = sort {$a <=> $b} keys %{$trace{$this_car}};
-#     print "  car $this_car: #loc=".(keys %{$trace{$this_car}}).", time=".($tmp[@tmp-1] - $tmp[0])."\n";
-# }
-# return
-
-# my @tmp = sort {$a <=> $b} (keys %times);
-# print "  overall time = ".($tmp[@tmp-1] - $tmp[0])."\n";
-
-# open FH, "> $output_dir/times.txt" or die $!;
-# print FH join("\n", sort {$a <=> $b} (keys %times))."\n";
-# close FH;
+my @times;
+my @all_times = sort {$a <=> $b} (keys %times);
+$cnt = 0;
+for (my $t = $all_times[0]; $t < $all_times[-1]; $t+=$itvl) {
+    $cnt ++;
+    if($cnt > 24) {last;}
+    push(@times, $t);
+}
+print "  start=".$all_times[0].", end=".$all_times[-1]."\n";
+print "  snapshot interval = $itvl, #snapshots = ".@times."\n";
 
 
 #############
 ## Interpolation
 #############
 print "Interpolation\n" if($DEBUG2);
-
-# my @times = sort {$a <=> $b} keys %times;
-my @tmp = sort {$a <=> $b} keys %times;
-my $x = 0;
-my @times = grep {not ++$x % $itvl } ($tmp[0] .. $tmp[-1]);
 
 my %new_trace;
 
@@ -168,9 +195,9 @@ foreach my $this_car (keys %trace) {
             
             $tidx ++;
             last if($tidx >= @times);
-        }
+        }        
         last if($tidx >= @times);
-        
+
         if($this_time == $times[$tidx]) {
             $new_trace{$this_car}{TIME}{$this_time}{X} = $thisx;
             $new_trace{$this_car}{TIME}{$this_time}{Y} = $thisy;
@@ -190,10 +217,11 @@ foreach my $this_car (keys %trace) {
 #############
 print "Find contact counts\n" if($DEBUG2);
 
-my @counts;
-my @cars = sort {$a cmp $b} keys %new_trace;
+my @cars = sort {$a <=> $b} keys %new_trace;
 foreach my $this_time (@times) {
-    print "  time = ".(($this_time-$times[0]) / $itvl)."/".@times."\n";
+    my @counts;
+    my $time_idx = ($this_time-$times[0]) / $itvl;
+    print "  time = $time_idx/".@times."\n";
     foreach my $ci (0..@cars-1) {
         my $thisx1 = 0;
         my $thisy1 = 0;
@@ -228,12 +256,13 @@ foreach my $this_time (@times) {
 
         push(@counts, $count);
     }
+    
+    open FH, "> $output_dir/snapshot_counts.$itvl.$range.$time_idx.txt" or die $!;
+    print FH join("\n", sort(@counts))."\n";
+    close FH;
 }
 
 
-open FH, "> $output_dir/counts.$itvl.$range.txt" or die $!;
-print FH join("\n", sort(@counts))."\n";
-close FH;
 
 
 #############

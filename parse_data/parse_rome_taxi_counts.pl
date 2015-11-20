@@ -15,7 +15,7 @@
 use strict;
 use POSIX;
 use List::Util qw(first max maxstr min minstr reduce shuffle sum);
-use Math::Trig qw(deg2rad pi great_circle_distance asin acos);
+use Math::Trig qw(deg2rad pi great_circle_distance);
 # use lib "/u/yichao/utils/perl";
 # use lib "../utils";
 
@@ -26,7 +26,7 @@ use Math::Trig qw(deg2rad pi great_circle_distance asin acos);
 my $DEBUG0 = 0;
 my $DEBUG1 = 1;
 my $DEBUG2 = 1; ## print progress
-my $DEBUG3 = 1; ## print output
+my $DEBUG3 = 0; ## print output
 
 
 #############

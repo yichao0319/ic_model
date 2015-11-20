@@ -30,6 +30,12 @@
 %%  fit_curve_manual('../../data/facebook/processed/', 'facebook_combined', 3);
 %%  fit_curve_manual('../../data/twitter/processed/', 'twitter_combined', 2);
 %%  fit_curve_manual('../../data/us_patent_cit/processed/', 'cit-Patents', 2);
+%%
+%%  fit_curve_manual('../../data/beijing_taxi/processed/', 'counts.300.1000', 1);
+%%  fit_curve_manual('../../data/sf_taxi/processed/', 'counts.120.1000', 1);
+%%  fit_curve_manual('../../data/rome_taxi/processed/', 'counts.120.1000', 1);
+%%
+%%  fit_curve_manual('../../data/aps_citation/processed/', 'aps-dataset-citations-2013', 1);
 %%     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -280,7 +286,7 @@ function plot_3seg_curve(x, y, L, U, fit_curve, ok, xseg, yseg, fig_idx, atitle,
     lh = plot(x, y, 'bo');
     % set(lh, 'LineWidth', 5);
     set(lh, 'MarkerSize', 10);
-    legends = {'empirical data'};
+    legends = {'data'};
     lhs = [lh];
     hold on;
 
@@ -357,7 +363,13 @@ function plot_3seg_curve(x, y, L, U, fit_curve, ok, xseg, yseg, fig_idx, atitle,
 
     set(gca, 'FontSize', font_size);
     % title(atitle, 'Interpreter', 'none');
-    legend(lhs, legends);
+    % legend(lhs, legends);
+    legend(lhs, legends, 'Location', 'SouthWest');
+    % legendflex(lhs, legends, 'ref', gcf, ... 
+    %                         'xscale', 2, ...
+    %                         'anchor', {'sw','sw'}, ...
+    %                         'nrow', 1);
+    % gridLegend(lhs, 3, legends, 'Location', 'SouthWest');
     % xlabel('Node Degree', 'FontSize', font_size);
     % ylabel('Frequency', 'FontSize', font_size);
     % xlabel('Paper Citations', 'FontSize', font_size);
@@ -376,8 +388,8 @@ end
 
 
 %% get_properties
-function [L, U] = get_properties(filename, filedir)
-    if nargin < 2, filedir = './'; end
+function [L, U] = get_properties(filename, input_dir)
+    if nargin < 2, input_dir = './'; end
 
     L = 0;
     U = Inf;
@@ -404,16 +416,16 @@ function [L, U] = get_properties(filename, filedir)
     elseif strcmp(filename, 'networks.num_coauthor_all_authors')
         L = 7;
         U = 30;
-    elseif strcmp(filename, 'range100.contact_dur') & length(findstr(filedir, 'rome_taxi')>0)
+    elseif strcmp(filename, 'range100.contact_dur') & length(findstr(input_dir, 'rome_taxi')>0)
         L = 900;
         U = 5000;
-    elseif strcmp(filename, 'range200.contact_dur') & length(findstr(filedir, 'rome_taxi')>0)
+    elseif strcmp(filename, 'range200.contact_dur') & length(findstr(input_dir, 'rome_taxi')>0)
         L = 800;
         U = 5000;
-    elseif strcmp(filename, 'range100.contact_dur') & length(findstr(filedir, 'shanghai_bus')>0)
+    elseif strcmp(filename, 'range100.contact_dur') & length(findstr(input_dir, 'shanghai_bus')>0)
         L = 40000;
         U = 60000;
-    elseif strcmp(filename, 'range200.contact_dur') & length(findstr(filedir, 'shanghai_bus')>0)
+    elseif strcmp(filename, 'range200.contact_dur') & length(findstr(input_dir, 'shanghai_bus')>0)
         L = 40000;
         U = 80000;
     elseif strcmp(filename, 'facebook_combined')
@@ -425,6 +437,18 @@ function [L, U] = get_properties(filename, filedir)
     elseif strcmp(filename, 'cit-Patents')
         L = 15;
         U = 150;
+    elseif strcmp(filename, 'aps-dataset-citations-2013')
+        L = 20;
+        U = 150;
+    elseif length(findstr(input_dir, 'beijing_taxi'))>0 & length(findstr(filename, 'counts'))>0
+        L = 0;
+        U = 25;
+    elseif length(findstr(input_dir, 'sf_taxi'))>0 & length(findstr(filename, 'counts'))>0
+        L = 0;
+        U = 250;
+    elseif length(findstr(input_dir, 'rome_taxi'))>0 & length(findstr(filename, 'counts'))>0
+        L = 0;
+        U = 15;
     end
 end
 
@@ -437,6 +461,12 @@ function figname = get_figname(filename, input_dir, fig_dir, prefix)
         figname = [fig_dir prefix '.shanghai_bus.' filename];
     elseif findstr(input_dir, 'shanghai_taxi')
         figname = [fig_dir prefix '.shanghai_taxi.' filename];
+    elseif findstr(input_dir, 'beijing_taxi')
+        figname = [fig_dir prefix '.beijing_taxi.' filename];
+    elseif findstr(input_dir, 'sf_taxi')
+        figname = [fig_dir prefix '.sf_taxi.' filename];
+    elseif findstr(input_dir, 'seattle_bus')
+        figname = [fig_dir prefix '.seattle_bus.' filename];
     else
         figname = [fig_dir prefix '.' filename];
     end
@@ -474,16 +504,16 @@ function [x_ticks, y_ticks, x_label, y_label] = get_plot_param(filename, input_d
     elseif strcmp(filename, 'networks.num_coauthor_all_authors')
         x_label = 'Coauthor Count x';
         y_label = 'Nummber of Scientists';
-    elseif strcmp(filename, 'range100.contact_dur') & length(findstr(input_dir, 'rome_taxi')>0)
+    elseif strcmp(filename, 'range100.contact_dur') & length(findstr(input_dir, 'rome_taxi'))>0
         x_label = 'Contact Duration (s)';
         y_label = 'Number of Contacts';
-    elseif strcmp(filename, 'range200.contact_dur') & length(findstr(input_dir, 'rome_taxi')>0)
+    elseif strcmp(filename, 'range200.contact_dur') & length(findstr(input_dir, 'rome_taxi'))>0
         x_label = 'Contact Duration (s)';
         y_label = 'Number of Contacts';
-    elseif strcmp(filename, 'range100.contact_dur') & length(findstr(input_dir, 'shanghai_bus')>0)
+    elseif strcmp(filename, 'range100.contact_dur') & length(findstr(input_dir, 'shanghai_bus'))>0
         x_label = 'Contact Duration (s)';
         y_label = 'Number of Contacts';
-    elseif strcmp(filename, 'range200.contact_dur') & length(findstr(input_dir, 'shanghai_bus')>0)
+    elseif strcmp(filename, 'range200.contact_dur') & length(findstr(input_dir, 'shanghai_bus'))>0
         x_label = 'Contact Duration (s)';
         y_label = 'Number of Contacts';
     elseif strcmp(filename, 'facebook_combined')
@@ -495,5 +525,20 @@ function [x_ticks, y_ticks, x_label, y_label] = get_plot_param(filename, input_d
     elseif strcmp(filename, 'cit-Patents')
         x_label = 'Citation Count x';
         y_label = 'Number of Patents';
+    elseif strcmp(filename, 'aps-dataset-citations-2013')
+        x_label = 'Citation Count x';
+        y_label = 'Number of Papers';
+    elseif length(findstr(input_dir, 'beijing_taxi'))>0 & length(findstr(filename, 'counts'))>0
+        x_label = 'Contact Count x';
+        y_label = 'Number of Vehicles';
+    elseif length(findstr(input_dir, 'sf_taxi'))>0 & length(findstr(filename, 'counts'))>0
+        x_label = 'Contact Count x';
+        y_label = 'Number of Vehicles';
+    elseif length(findstr(input_dir, 'rome_taxi'))>0 & length(findstr(filename, 'counts'))>0
+        x_label = 'Contact Count x';
+        y_label = 'Number of Vehicles';
+    elseif length(findstr(input_dir, 'shanghai_taxi'))>0 & length(findstr(filename, 'counts'))>0
+        x_label = 'Contact Count x';
+        y_label = 'Number of Vehicles';
     end
 end

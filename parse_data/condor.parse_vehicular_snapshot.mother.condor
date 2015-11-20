@@ -1,0 +1,20 @@
++Group = "GRAD" 
++Project = "NETWORKING_MULTIMEDIA" 
++ProjectDescription = "process vehicular datasets" 
+
+Universe = vanilla
+
+executable = /usr/bin/perl 
+arguments = -w CODE_NAME.pl ITVL RANGE
+Requirements = (ARCH == "X86_64")
+# Requirements = (ARCH == "INTEL") && (Memory >= 64)
+# Request_Memory = 64GB
+# Rank = (Memory >= 128)
+Rank = (Memory)
+
+
+Error = /scratch/cluster/yichao/ic_model/data/parse_data/condor/log/CODE_NAME.ITVL.RANGE.err
+Output = /scratch/cluster/yichao/ic_model/data/parse_data/condor/log/CODE_NAME.ITVL.RANGE.txt
+Log = /scratch/cluster/yichao/ic_model/data/parse_data/condor/log/CODE_NAME.ITVL.RANGE.log
+
+Queue 1

@@ -15,7 +15,7 @@
 use strict;
 use POSIX;
 use List::Util qw(first max maxstr min minstr reduce shuffle sum);
-use Math::Trig qw(deg2rad pi great_circle_distance asin acos);
+use Math::Trig qw(deg2rad pi great_circle_distance);
 # use lib "/u/yichao/utils/perl";
 # use lib "../utils";
 
@@ -181,7 +181,7 @@ foreach my $this_car (keys %trace) {
             last if($tidx >= @times);
         }
         last if($tidx >= @times);
-        
+
         if($this_time == $times[$tidx]) {
             $new_trace{$this_car}{TIME}{$this_time}{X} = $thisx;
             $new_trace{$this_car}{TIME}{$this_time}{Y} = $thisy;

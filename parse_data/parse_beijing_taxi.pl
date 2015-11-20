@@ -30,8 +30,8 @@ my $DEBUG3 = 0; ## print output
 #############
 # Constants
 #############
-my $input_dir  = "./raw_shanghai_taxi";
-my $output_dir = "./processed_shanghai_taxi";
+my $input_dir  = "./raw_beijing_taxi";
+my $output_dir = "./processed_beijing_taxi";
 # my $filename = "bus";
 
 #############
@@ -67,43 +67,55 @@ if(@ARGV != 0) {
 #############
 ## read directory
 #############
+my $cnt = 0;
 opendir(my $dh, $input_dir) || die $!;
 while(readdir $dh) {
     chomp;
-    if($_ =~ /(Taxi.*)/) {
+    if($_ =~ /(\d+)\.txt/) {
         my $filename = $1;
         print "  $filename\n" if($DEBUG3);
+
+        #############
+        ## DEBUG
+        $cnt ++;
+        # last if($cnt > 5);
+        #############
 
         #############
         ## Read Data
         #############
         # print "Read Data\n" if($DEBUG2);
         
-        open FH, "$input_dir/$filename" or die $!;
+        open FH, "$input_dir/$filename.txt" or die $!;
         while(<FH>) {
             print $_ if($DEBUG3);
             chomp;
             my @data = split(/,/, $_);
-            my $car = $data[0];
-            my $lng = $data[2] + 0;
-            my $lat = $data[3] + 0;
+            my $timestr = $data[1];
+            my $car = $data[0]+0;
+            my $lat = $data[3]+0;
+            my $lng = $data[2]+0;
 
             my $time = 0;
-            if($data[1] =~ /(\d+)-(\d+)-(\d+)\s+(\d+):(\d+):(\d+)/) {
-                my $year = $1 + 0;
-                my $mon = $2 + 0;
-                my $day = $3 + 0;
-                my $hour = $4 + 0;
-                my $min = $5 + 0;
-                my $sec = $6 + 0;
-                $time = (((get_month_cumdays($mon-1) + $day)*24 + $hour)*60 + $min)*60 + $sec;
+            if($timestr =~ /(\d+)-(\d+)-(\d+)\s+(\d+):(\d+):(\d+)/) {
+                my $year = $1+0;
+                my $mon = $2+0;
+                my $day = $3+0;
+                my $hour = $4+0;
+                my $min = $5+0;
+                my $sec = $6+0;
 
+                $time = (((get_month_cumdays($mon-1) + $day)*24 + $hour)*60 + $min)*60 + $sec;
                 $times{$time} = 1;
             }
+            else { die "Wrong Time Format: $timestr"; }
+                
 
             print "  car $car [$lat, $lng] at $time\n" if($DEBUG3);
-            $trace{$car}{$time}{X} = $lat;
-            $trace{$car}{$time}{Y} = $lng;
+            # $trace{$car}{$time}{X} = $lat;
+            # $trace{$car}{$time}{Y} = $lng;
+            $trace{$car}{TIME}{$time}{X} = $lat;
+            $trace{$car}{TIME}{$time}{Y} = $lng;
 
         }
         close FH;
@@ -111,20 +123,21 @@ while(readdir $dh) {
 }
 closedir $dh;
 
+
 open FH_CAR, "> $output_dir/cars.txt" or die $!;
 print "  #car = ".(scalar keys %trace)."\n";
 foreach my $this_car (sort {$a <=> $b} keys %trace) {
     # next if (scalar (keys %{$trace{$this_car}}) < 1000);
-    print FH_CAR "$this_car, ".(scalar (keys %{$trace{$this_car}}))."\n";
+    print FH_CAR "$this_car, ".(scalar (keys %{$trace{$this_car}{TIME}}))."\n";
 
     open FH, "> $output_dir/cars/$this_car.txt" or die $!;
-    foreach my $this_time (sort {$a <=> $b} keys %{$trace{$this_car}}) {
-        print FH "$this_time, ".$trace{$this_car}{$this_time}{X}.", ".$trace{$this_car}{$this_time}{Y}."\n";
+    foreach my $this_time (sort {$a <=> $b} keys %{$trace{$this_car}{TIME}}) {
+        print FH "$this_time, ".$trace{$this_car}{TIME}{$this_time}{X}.", ".$trace{$this_car}{TIME}{$this_time}{Y}."\n";
     }
     close FH;
 
-    my @tmp = sort {$a <=> $b} keys %{$trace{$this_car}};
-    print "  car $this_car: #loc=".(keys %{$trace{$this_car}}).", time=".($tmp[@tmp-1] - $tmp[0])."\n";
+    my @tmp = sort {$a <=> $b} keys %{$trace{$this_car}{TIME}};
+    print "  car $this_car: #loc=".(keys %{$trace{$this_car}{TIME}}).", time=".($tmp[@tmp-1] - $tmp[0])."\n";
 }
 close FH_CAR;
 # return

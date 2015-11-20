@@ -1,6 +1,6 @@
 #!/bin/bash
 
-func="parse_vehicular"
+func="parse_vehicular_snapshot"
 
 num_jobs=200
 cnt=0
@@ -9,11 +9,11 @@ cnt=0
 # rm tmp.$func.dag*
 # echo "" > tmp.$func.dag
 
-# codes=("parse_shanghai_taxi_counts" "parse_rome_taxi_counts" "parse_sf_taxi_counts" "parse_seattle_bus_counts" "parse_beijing_taxi_counts")
-codes=("parse_shanghai_taxi_counts" "parse_beijing_taxi_counts")
-# itvls=(60 120 300 600)
-itvls=(300)
+###################################
+codes=("parse_beijing_taxi_counts_snapshots")
+itvls=(3600)
 ranges=(200 300 500 1000)
+###################################
 
 
 for code in ${codes[@]}; do

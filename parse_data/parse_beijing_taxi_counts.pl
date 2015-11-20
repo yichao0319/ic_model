@@ -80,7 +80,7 @@ while(readdir $dh) {
         #############
         ## DEBUG
         $cnt ++;
-        # last if($cnt > 5);
+        last if($cnt > 2000);
         #############
 
         #############

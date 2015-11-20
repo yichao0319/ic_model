@@ -54,6 +54,8 @@
 %%
 %%  visualize_curve('../../data/sigcomm09/processed/', 'proximity.dur', 100);
 %%  visualize_curve('../../data/sigcomm09/processed/', 'proximity.num_seen', 150);
+%%
+%%  visualize_curve('../../data/shanghai_taxi/processed/', 'counts.600.10000', 1);
 %%     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -94,6 +96,15 @@ function visualize_curve(input_dir, filename, binsize)
     %% --------------------
     %% Main starts
     %% --------------------
+
+    %% --------------------
+    %% get dataset name
+    %% --------------------
+    if DEBUG2, fprintf('Get Dataset Name\n'); end
+
+    dataname = get_dataset_name(input_dir);
+    fprintf('  dataset name = %s\n', dataname);
+    
     
     %% --------------------
     %% Read data
@@ -111,9 +122,9 @@ function visualize_curve(input_dir, filename, binsize)
 
     ranges = [min(data):binsize:max(data)+1];
     y = histc(data, ranges);
-    % y = y / sum(y);
-    y = y(2:end);
-    ranges = ranges(2:end);
+    y = y / sum(y);
+    % y = y(2:end);
+    % ranges = ranges(2:end);
 
     %% --------------------
     %% Put to bins: log bin
@@ -132,6 +143,7 @@ function visualize_curve(input_dir, filename, binsize)
     end
     ranges_logbin = ranges_new;
     y_logbin = histc(data, ranges_logbin);
+    y_logbin = y_logbin / sum(y_logbin);
 
 
     minx = min(ranges) * 0.9;
@@ -148,7 +160,7 @@ function visualize_curve(input_dir, filename, binsize)
 
     plot(ranges, y, '-b.');
     hold on;
-    plot(ranges_logbin, y_logbin, 'ro');
+    % plot(ranges_logbin, y_logbin, 'ro');
     
     set(gca, 'XScale', 'log');
     set(gca, 'YScale', 'log');
@@ -157,10 +169,19 @@ function visualize_curve(input_dir, filename, binsize)
 
     set(gca, 'FontSize', font_size);
     title([filename ', size=' num2str(length(data))], 'Interpreter', 'none');
-    xlabel('Node Degree', 'FontSize', font_size);
+    % xlabel('Node Degree', 'FontSize', font_size);
+    % ylabel('Frequency', 'FontSize', font_size);
+    xlabel('Contact Counts', 'FontSize', font_size);
     ylabel('Frequency', 'FontSize', font_size);
-    legend({['equal bin=' num2str(binsize)], 'log bin'});
+    % legend({['equal bin=' num2str(binsize)], 'log bin'});
 
     
-    print(fh, '-dpsc', [fig_dir filename '.eps']);
+    print(fh, '-dpsc', [fig_dir dataname '.' filename '.eps']);
+end
+
+
+%% get_dataset_name
+function [dataname] = get_dataset_name(input_dir)
+    C = strsplit(input_dir, '/');
+    dataname = char(C{4});
 end
