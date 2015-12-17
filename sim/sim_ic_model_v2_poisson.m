@@ -2,159 +2,48 @@
 % Focus on 1 particular node * among the 300,000 points
 
 %% sim_ic_model_v2: function description
-function [a, exponent] = sim_ic_model_v2(N, L, U)
+function [a, exponent] = sim_ic_model_v2_poisson(N)
     % N = 100000;
     % N = 1000;
     if nargin < 1, N = 100000; end
-    if N <= 0, N = 100000; end
-    if nargin < 2, L = 1; end
-    if nargin < 3, U = N; end
-
+    
+    L = 1;
+    U = 1;
 
     output_dir = './data/';
     fig_dir = './fig/';
     font_size = 18;
-    total_sim = 1000;
-
+    
     star = round(N*rand); %a random index of 300,000
     A = randperm(N);
     k = zeros(1, N);
     k_hat = zeros(1, N);
 
+    N2 = round(N/2);
 
-    for i = 1:N
+
+    for i = N2+1:N
         % fprintf('%d / %d\n', i, N);
-        show_progress(i, N, 1);
+        show_progress(i-N2, N-N2, 1);
 
         k(A(i)) = 1;
-        for j = 1:i
-        	if k(A(j)) <= L
-           	k_hat(A(j)) = L;
-	   	else
-            	if k(A(j)) <= U
-                		k_hat(A(j)) = k(A(j));
-            	else
-                		k_hat(A(j)) = U;
-            	end
-        	end
-        end
-        total_mod_deg = sum(k_hat(A(1:i)));
         
-        prob = zeros(1, i);
-        cdf = zeros(1, i);
-
-        for j = 1:i
-            
-            prob(j) = k_hat(A(j))/total_mod_deg;
-        
-            if(j == 1)
-                cdf(j) = prob(j);
-            else
-                cdf(j) = cdf(j-1) + prob(j);
-            end
-
-        end
-
-        realized = rand;
-        join = zeros(1, i);
-    
-        % prob of attaching the node is k_hat/sum(k_hat);
-
-        % for j = 1:i
-        %     if (realized < cdf(j))
-        %         join(j) = 1;
-        %         break;
-        %     end
-        % end
-       
-        % for j2 = 1:i
-        %     k(A(j2)) = k(A(j2)) + join(j2);
-        % end
-        idx = find(cdf > realized);
-        idx = idx(1);
+        idx = round(rand * (i-2)) + 1;
         k(A(idx)) = k(A(idx)) + 1;
-
     end
 
+    %% only see the first N2 nodes
+    k = k(A(1:N2));
     % K(sim) = k(star);
     x = [min(k):max(k)]';
     y = histc(k, x)';
 
 
-    %% --------------------
-    %% Fitting
-    %% --------------------
-    [fit_curve, ok, xseg, yseg, rmse] = fit_3seg_curve(x, y, L, U);
-
-    if ok(2)
-        values = coeffvalues(fit_curve{2});
-        a = values(1);
-        exponent = values(2);
-    else
-        a = 0;
-        exponent = 0;
-    end
-
 
     %% --------------------
     %% save values
     %% --------------------
-    xx = [0; x];
-    yy = [N; y];
-    dlmwrite(sprintf('%sL%dU%dN%d.txt', output_dir, L, U, N), [xx, yy], 'delimiter', '\t');
-    dlmwrite(sprintf('%sL%dU%dN%d.fit.txt', output_dir, L, U, N), [a, exponent], 'delimiter', '\t');
-    
-
-    %% --------------------
-    %% plot figure
-    %% --------------------
-    fh = figure(1); clf;
-    
-    lh = plot(x, y, '-bo');
-    set(lh, 'MarkerSize', 10);
-    legends = {'empirical data'};
-    lhs = [lh];
-    hold on;
-
-    if ok(2)
-        lh = plot(xseg{2}, fit_curve{2}(xseg{2}));    
-        set(lh, 'Color', 'r');
-        set(lh, 'LineStyle', '-');
-        set(lh, 'LineWidth', 4);
-        legends{end+1} = 'Power-Law';
-        lhs(end+1) = lh;
-        hold on;
-        
-        if ok(1) | ok(3)
-            others = [];
-            if ok(1), others = [others; xseg{1}]; end
-            if ok(3), others = [others; xseg{3}]; end
-            lh = plot(others, fit_curve{2}(others));
-            set(lh, 'Color', 'r');
-            set(lh, 'LineStyle', '--');
-            set(lh, 'LineWidth', 1);
-        end
-    end
-
-    plot(x, 4/(x.*(x+1).*(x+2)), '-g');
-
-    set(gca, 'FontSize', font_size);
-    set(gca, 'XScale', 'log');
-    set(gca, 'YScale', 'log');
-    xlabel('Node Degree', 'FontSize', font_size);
-    ylabel('Frequency', 'FontSize', font_size);
-    title(sprintf('L=%d,U=%d, exponent=%.2f', L, U, exponent));
-
-    maxx = max(x) * 1.1;
-    minx = min(x) * 0.9;
-    maxy = max(y) * 1.1;
-    miny = min(y(y>0)) * 0.9;
-    set(gca, 'XLim', [minx maxx]);
-    set(gca, 'YLim', [miny maxy]);
-    legend(lhs, legends);
-
-    print(fh, '-dpsc', sprintf('%sL%dU%dN%d.eps', fig_dir, L, U, N));
-    print(fh, '-dpng', sprintf('%sL%dU%dN%d.png', fig_dir, L, U, N));
+    dlmwrite(sprintf('%sL%dU%dN%d.poisson.txt', output_dir, L, U, N), [x, y], 'delimiter', '\t');
 end
 
 
