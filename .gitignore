@@ -2,4 +2,5 @@
 fig*
 raw*
 processed*
-data
+data*
+delete*
