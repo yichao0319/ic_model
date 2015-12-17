@@ -2,7 +2,7 @@
 % Focus on 1 particular node * among the 300,000 points
 
 %% sim_ic_model_v2: function description
-function [exponent] = sim_ic_model_v2(N, L, U)
+function [a, exponent] = sim_ic_model_v2(N, L, U)
     % N = 100000;
     % N = 1000;
     if nargin < 1, N = 100000; end
@@ -11,6 +11,7 @@ function [exponent] = sim_ic_model_v2(N, L, U)
     if nargin < 3, U = N; end
 
 
+    output_dir = './data/';
     fig_dir = './fig/';
     font_size = 18;
     total_sim = 1000;
@@ -23,6 +24,7 @@ function [exponent] = sim_ic_model_v2(N, L, U)
 
     for i = 1:N
         % fprintf('%d / %d\n', i, N);
+        show_progress(i, N, 1);
 
         k(A(i)) = 1;
         for j = 1:i
@@ -83,12 +85,26 @@ function [exponent] = sim_ic_model_v2(N, L, U)
 
     if ok(2)
         values = coeffvalues(fit_curve{2});
+        a = values(1);
         exponent = values(2);
     else
+        a = 0;
         exponent = 0;
     end
 
 
+    %% --------------------
+    %% save values
+    %% --------------------
+    xx = [0; x];
+    yy = [N; y];
+    dlmwrite(sprintf('%sL%dU%dN%d.txt', output_dir, L, U, N), [xx, yy], 'delimiter', '\t');
+    dlmwrite(sprintf('%sL%dU%dN%d.fit.txt', output_dir, L, U, N), [a, exponent], 'delimiter', '\t');
+    
+
+    %% --------------------
+    %% plot figure
+    %% --------------------
     fh = figure(1); clf;
     
     lh = plot(x, y, '-bo');
