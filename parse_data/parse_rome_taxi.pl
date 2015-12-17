@@ -26,7 +26,7 @@ use Math::Trig qw(deg2rad pi great_circle_distance asin acos);
 my $DEBUG0 = 0;
 my $DEBUG1 = 1;
 my $DEBUG2 = 1; ## print progress
-my $DEBUG3 = 0; ## print output
+my $DEBUG3 = 1; ## print output
 
 
 #############
@@ -62,8 +62,8 @@ if(@ARGV != 0) {
 #############
 ## uncompress file
 #############
-# $cmd = "gunzip $input_dir/*gz";
-# `$cmd`;
+$cmd = "gunzip $input_dir/*gz";
+`$cmd`;
 
 
 #############
@@ -89,11 +89,9 @@ while (<FH>) {
         my $time = (((get_month_cumdays($mon-1) + $day)*24 + $hour)*60 + $min)*60 + $sec;
         $times{$time} = 1;
 
-        # push(@{$trace{$carid}{TIME}}, $time);
-        # push(@{$trace{$carid}{X}}, $locx);
-        # push(@{$trace{$carid}{Y}}, $locy);
-        $trace{$carid}{TIME}{$time}{X} = $locx;
-        $trace{$carid}{TIME}{$time}{Y} = $locy;
+        push(@{$trace{$carid}{TIME}}, $time);
+        push(@{$trace{$carid}{X}}, $locx);
+        push(@{$trace{$carid}{Y}}, $locy);
     }
     else {
         print $_;
@@ -103,31 +101,15 @@ while (<FH>) {
 }
 close FH;
 
-# print "#car = ".(scalar keys %trace)."\n";
-# foreach my $this_car (sort {$a <=> $b} keys %trace) {
-#     open FH, "> $output_dir/cars/$this_car.txt" or die $!;
-#     foreach my $i (0 .. @{$trace{$this_car}{TIME}}-1) {
-#         print FH "".$trace{$this_car}{TIME}[$i].", ".$trace{$this_car}{X}[$i].", ".$trace{$this_car}{Y}[$i]."\n";
-#     }
-#     close FH;
-#     print "  car $this_car: #loc=".(@{$trace{$this_car}{TIME}})."\n";
-# }
-open FH_CAR, "> $output_dir/cars.txt" or die $!;
-print "  #car = ".(scalar keys %trace)."\n";
+print "#car = ".(scalar keys %trace)."\n";
 foreach my $this_car (sort {$a <=> $b} keys %trace) {
-    # next if (scalar (keys %{$trace{$this_car}}) < 1000);
-    print FH_CAR "$this_car, ".(scalar (keys %{$trace{$this_car}{TIME}}))."\n";
-
     open FH, "> $output_dir/cars/$this_car.txt" or die $!;
-    foreach my $this_time (sort {$a <=> $b} keys %{$trace{$this_car}{TIME}}) {
-        print FH "$this_time, ".$trace{$this_car}{TIME}{$this_time}{X}.", ".$trace{$this_car}{TIME}{$this_time}{Y}."\n";
+    foreach my $i (0 .. @{$trace{$this_car}{TIME}}-1) {
+        print FH "".$trace{$this_car}{TIME}[$i].", ".$trace{$this_car}{X}[$i].", ".$trace{$this_car}{Y}[$i]."\n";
     }
     close FH;
-
-    my @tmp = sort {$a <=> $b} keys %{$trace{$this_car}{TIME}};
-    print "  car $this_car: #loc=".(keys %{$trace{$this_car}{TIME}}).", time=".($tmp[@tmp-1] - $tmp[0])."\n";
+    print "  car $this_car: #loc=".(@{$trace{$this_car}{TIME}})."\n";
 }
-close FH_CAR;
 # return
 
 open FH, "> $output_dir/times.txt" or die $!;
@@ -138,8 +120,8 @@ close FH;
 #############
 ## compress file
 #############
-# $cmd = "gzip $input_dir/taxi_february*";
-# `$cmd`;
+$cmd = "gzip $input_dir/taxi_february*";
+`$cmd`;
 
 
 # open FH_OUT, ">$output_dir/kddcup99.duration.txt";
@@ -228,8 +210,4 @@ sub get_month_cumdays {
     }
     
     return $days[$mon-1];
-}
-
-sub round {
-  $_[0] > 0 ? int($_[0] + .5) : -int(-$_[0] + .5);
 }

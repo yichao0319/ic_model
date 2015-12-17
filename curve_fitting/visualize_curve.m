@@ -61,6 +61,7 @@
 
 function visualize_curve(input_dir, filename, binsize)
     % addpath('../utils');
+    addpath('./ezyfit');
     
     %% --------------------
     %% DEBUG
@@ -158,9 +159,22 @@ function visualize_curve(input_dir, filename, binsize)
     fig_idx = fig_idx + 1;
     fh = figure(fig_idx); clf;
 
-    plot(ranges, y, '-b.');
+    % plot(ranges, y, '-b.');
+    plot(y, '-b.');
     hold on;
-    % plot(ranges_logbin, y_logbin, 'ro');
+
+    [alpha, xmin, L] = plfit(y)
+    
+    % idx = find(ranges >= 20 & ranges <= 40);
+    % idx = find(ranges >= 1);
+    % f = ezfit(ranges(idx), y(idx), 'a*x^n;log')
+    % showfit(ranges(idx), y(idx), 'power')
+    % showfit(f)
+
+    % idx = find(ranges <= 20);
+    % f2 = ezfit(ranges(idx), y(idx), 'p*((1-p)^x)')
+    % % showfit(ranges(idx), y(idx), 'power')
+    % showfit(f2)
     
     set(gca, 'XScale', 'log');
     set(gca, 'YScale', 'log');
