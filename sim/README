@@ -1,0 +1,12 @@
+sim_ic_model.m
+  The first version of simulation, which is mainly done by David.
+
+sim_ic_model_v2.m
+  The modified version which is the one to generate sim results (2015.12.18).
+
+sim_ic_model_v2_poisson.m
+  Because the Poisson Model is slightly different from MC model, I copy sim_ic_model_v2.m and make an independant version for Poisson Model.
+
+plot_sim_v2_results.m
+  Plot the simulation results from sim_ic_model_v2.m and sim_ic_model_v2_poisson.m
+
