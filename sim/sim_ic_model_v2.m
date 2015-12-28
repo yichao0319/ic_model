@@ -10,8 +10,9 @@ function sim_ic_model_v2(N, L, U, seed)
     rng(seed);
 
 
-    output_dir = './data/';
-    fig_dir = './fig/';
+    % output_dir = './data/';
+    output_dir = '../../data/sim/data/';
+    % fig_dir = './fig/';
     font_size = 18;
     total_sim = 1000;
 

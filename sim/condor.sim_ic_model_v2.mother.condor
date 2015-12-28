@@ -1,0 +1,20 @@
++Group = "GRAD" 
++Project = "NETWORKING_MULTIMEDIA" 
++ProjectDescription = "run IC Model simulation" 
+
+Universe = vanilla
+
+executable = /bin/bash
+arguments = tmp.XXX.sh
+Requirements = (ARCH == "X86_64")
+# Requirements = (ARCH == "INTEL") && (Memory >= 64)
+# Request_Memory = 64GB
+# Rank = (Memory >= 128)
+Rank = (Memory)
+
+
+Error = /scratch/cluster/yichao/ic_model/data/sim/condor/log/XXX.err
+Output = /scratch/cluster/yichao/ic_model/data/sim/condor/log/XXX.txt
+Log = /scratch/cluster/yichao/ic_model/data/sim/condor/log/XXX.log
+
+Queue 1

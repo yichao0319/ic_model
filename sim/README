@@ -10,3 +10,14 @@ sim_ic_model_v2_poisson.m
 plot_sim_v2_results.m
   Plot the simulation results from sim_ic_model_v2.m and sim_ic_model_v2_poisson.m
 
+
+--------------------
+Internal Link
+
+sim_ic_model_internal_link.m
+sim_ic_model_internal_link_poisson.m
+    The two are used to simulate IC model with internal links. This version use random or IC model probability to select an existing node to build link. But, according to David, this process does not fit his model.
+
+sim_ic_model_internal_link_v2.m
+    Use the probability given by David to build interal links.
+
