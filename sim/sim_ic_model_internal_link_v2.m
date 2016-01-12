@@ -1,6 +1,11 @@
 %% sim_ic_model_internal_link_v2(100000, 2, 8, 1, 'cal')
+%% sim_ic_model_internal_link_v2(100000, 3, 10, 1, 'cal')
+%% sim_ic_model_internal_link_v2(100000, 1, 1, 1, 'cal')
+%% sim_ic_model_internal_link_v2(100000, 1, 100000, 1, 'cal')
+%% sim_ic_model_internal_link_v2(100000, 3, 100000, 1, 'cal')
+%% sim_ic_model_internal_link_v2(100000, 1, 10, 1, 'cal')
 
-function sim_ic_model_internal_link_v2(N, L, U, itvl, sel_type)
+function sim_ic_model_internal_link_v2(N, L, U, itvl, sel_type, seed)
     DEBUG3 = 1;
     % N = 100000;
     % N = 1000;
@@ -9,7 +14,11 @@ function sim_ic_model_internal_link_v2(N, L, U, itvl, sel_type)
     if nargin < 2, L = 1; end
     if nargin < 3, U = N; end
     if nargin < 4, itvl = 1; end
-    if nargin < 5, sel_type = 'mc'; end
+    if nargin < 5, sel_type = 'cal'; end
+    if nargin < 6, seed = 1; end
+
+    rng(seed);
+    seed
 
 
     output_dir = './data/';
@@ -57,7 +66,7 @@ function sim_ic_model_internal_link_v2(N, L, U, itvl, sel_type)
         %% ---------------------
         %% select an existing node to attach to others
         %% ---------------------
-        if i > 10 & mod(i,itvl) == 0
+        if i > 50 & mod(i,itvl) == 0
             %% select an existing node
             if strcmp(sel_type, 'mc')
                 realized = rand;
@@ -137,7 +146,7 @@ function sim_ic_model_internal_link_v2(N, L, U, itvl, sel_type)
 end
 
 function [k] = cal_k(K)
-    DEBUG3 = 0;
+    DEBUG3 = 1;
 
     epsilon = 0.00001;
     c = sum(K) / 2;
@@ -184,6 +193,11 @@ function [k] = cal_k(K)
                 a = 2*c/max(K);
                 dif = cal_dif(a, K, c, n);
 
+                K
+                c
+                a
+                dif
+
                 if dif > 0, error('should be negative'); end
             else
                 a = (a + prev_a_neg) / 2;
@@ -223,7 +237,7 @@ function [pp] = cal_pp(p)
 end
 
 function [n1, n2] = select_link(pp)
-    DEBUG3 = 0;
+    DEBUG3 = 1;
     
     n = sqrt(length(pp));
     
