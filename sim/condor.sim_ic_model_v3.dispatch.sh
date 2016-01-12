@@ -1,6 +1,6 @@
 #!/bin/bash
 
-func="sim_ic_model_v2"
+func="sim_ic_model_v3"
 
 num_jobs=500
 cnt=0

@@ -2,7 +2,8 @@ sim_ic_model.m
   The first version of simulation, which is mainly done by David.
 
 sim_ic_model_v2.m
-  The modified version which is the one to generate sim results (2015.12.18).
+  2015.12.18 -- The modified version which is the one to generate sim results.
+  2015.12.27 -- the output file name is modified but plot_sim_v2_results.m is not modified accordingly.
 
 sim_ic_model_v2_poisson.m
   Because the Poisson Model is slightly different from MC model, I copy sim_ic_model_v2.m and make an independant version for Poisson Model.
@@ -11,13 +12,18 @@ plot_sim_v2_results.m
   Plot the simulation results from sim_ic_model_v2.m and sim_ic_model_v2_poisson.m
 
 
+sim_ic_model_v3.m
+sim_ic_model_v3_poisson.m
+plot_sim_v3_condor_results.m
+  same as v2, but optimize for running time (correctness is not verified yet.)
+
 --------------------
 Internal Link
 
 sim_ic_model_internal_link.m
 sim_ic_model_internal_link_poisson.m
-    The two are used to simulate IC model with internal links. This version use random or IC model probability to select an existing node to build link. But, according to David, this process does not fit his model.
+  The two are used to simulate IC model with internal links. This version use random or IC model probability to select an existing node to build link. But, according to David, this process does not fit his model.
 
 sim_ic_model_internal_link_v2.m
-    Use the probability given by David to build interal links.
+  Use the probability given by David to build interal links.
 
