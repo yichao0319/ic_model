@@ -15,7 +15,7 @@ function plot_3seg_curve(x, y, L, U, fit_curve, ok, xseg, yseg, fig_idx, atitle,
     lh = plot(x, y, 'bo');
     % set(lh, 'LineWidth', 5);
     set(lh, 'MarkerSize', 10);
-    legends = {'empirical data'};
+    legends = {'Empirical Data'};
     lhs = [lh];
     hold on;
 
@@ -28,7 +28,7 @@ function plot_3seg_curve(x, y, L, U, fit_curve, ok, xseg, yseg, fig_idx, atitle,
         set(lh, 'LineStyle', '-');
         set(lh, 'LineWidth', 2);
         % legends{end+1} = 'phase1';
-        legends{end+1} = ' geometric';
+        legends{end+1} = 'Geom($\frac{\gamma}{\gamma+L}$)';
         lhs(end+1) = lh;
         hold on;
 
@@ -48,7 +48,7 @@ function plot_3seg_curve(x, y, L, U, fit_curve, ok, xseg, yseg, fig_idx, atitle,
         set(lh, 'LineStyle', '-');
         set(lh, 'LineWidth', 4);
         % legends{end+1} = 'phase2';
-        legends{end+1} = ' power law';
+        legends{end+1} = 'Power-Law';
         lhs(end+1) = lh;
         hold on;
 
@@ -61,14 +61,14 @@ function plot_3seg_curve(x, y, L, U, fit_curve, ok, xseg, yseg, fig_idx, atitle,
         set(lh, 'LineWidth', 1);
     end
 
-    % if ok(3)
-    if 0
+    if ok(3)
+    % if 0
         % lh = plot(fit_curve{3}, '-m');
         lh = plot(xseg{3}, fit_curve{3}(xseg{3}));
         set(lh, 'Color', 'm');
         set(lh, 'LineStyle', '-');
         set(lh, 'LineWidth', 6);
-        legends{end+1} = 'phase3';
+        legends{end+1} = 'Geom($\frac{\gamma}{\gamma+U}$)';
         lhs(end+1) = lh;
         hold on;
 
@@ -97,20 +97,12 @@ function plot_3seg_curve(x, y, L, U, fit_curve, ok, xseg, yseg, fig_idx, atitle,
     set(gca, 'FontSize', font_size);
     % title(atitle, 'Interpreter', 'none');
     % legend(lhs, legends);
-    legend(lhs, legends, 'Location', 'SouthWest');
-    % legendflex(lhs, legends, 'ref', gcf, ... 
-    %                         'xscale', 2, ...
-    %                         'anchor', {'sw','sw'}, ...
-    %                         'nrow', 1);
-    % gridLegend(lhs, 3, legends, 'Location', 'SouthWest');
-    % xlabel('Node Degree', 'FontSize', font_size);
-    % ylabel('Frequency', 'FontSize', font_size);
-    % xlabel('Paper Citations', 'FontSize', font_size);
-    % ylabel('Number of Papers', 'FontSize', font_size);
-    % xlabel('Coauthors', 'FontSize', font_size);
-    % ylabel('Number of Scientists', 'FontSize', font_size);
-    % xlabel('Contact Time', 'FontSize', font_size);
-    % ylabel('Number of Contacts', 'FontSize', font_size);
+    h = legend(lhs, legends, 'Location', 'SouthWest');
+    set(h, 'Interpreter', 'latex');
+    leg_pos = get(h, 'position');
+    set(h, 'position',[leg_pos(1)*0.95,leg_pos(2)*1.2,...
+                      leg_pos(3)*1.1,leg_pos(4)]);
+    
     xlabel(x_label, 'FontSize', font_size);
     ylabel(y_label, 'FontSize', font_size);
     

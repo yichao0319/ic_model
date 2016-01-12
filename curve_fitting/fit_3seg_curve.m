@@ -30,10 +30,10 @@ function [fit_curve, ok, xseg, yseg, rmse] = fit_3seg_curve(x, y, L, U)
         xseg{2} = x(idx);
         yseg{2} = y(idx);
 
-        % [fit_curve{2}, gof{2}] = fit(xseg{2}, yseg{2}, 'power1');
-        f = ezfit(xseg{2}, yseg{2}, 'a*x^n;log');
-        fit_curve{2} = cfit(fittype(f.eq), f.m(1), f.m(2));
-        gof{2}.rmse = mean((fit_curve{2}(xseg{2}) - yseg{2}).^2);
+        [fit_curve{2}, gof{2}] = fit(xseg{2}, yseg{2}, 'power1');
+        % f = ezfit(xseg{2}, yseg{2}, 'a*x^n;log');
+        % fit_curve{2} = cfit(fittype(f.eq), f.m(1), f.m(2));
+        % gof{2}.rmse = mean((fit_curve{2}(xseg{2}) - yseg{2}).^2);
 
         fprintf('  Error2:\n');
         fit_curve{2}
