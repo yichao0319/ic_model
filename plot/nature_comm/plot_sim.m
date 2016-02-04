@@ -1,24 +1,19 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Yi-Chao Chen @ UT Austin
-%%
-%% - Input:
-%%
-%%
-%% - Output:
-%%
-%%
-%% example:
-%%  plot_sim(100000, 1, 1, 100)
-%%  plot_sim(100000, 1, 100000, 100)
-%%  plot_sim(100000, 2, 8, 100)
-%%  plot_sim(100000, 3, 10, 100)
-%%     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % function plot_sim_v3_condor_results(N, L, U, nseed)
-function plot_sim(N, L, U, nseed)
+function plot_sim()
+    plot_single(100000, 1, 1, 100)
+    plot_single(100000, 1, 100000, 100)
+    plot_single(100000, 2, 8, 100)
+    plot_single(100000, 3, 10, 100)
+    plot_single(100000, 3, 100000, 100)
+end
+
+function plot_single(N, L, U, nseed)
     % addpath('../utils');
-    
+
     %% --------------------
     %% DEBUG
     %% --------------------
@@ -36,13 +31,14 @@ function plot_sim(N, L, U, nseed)
     input_dir = './data/sim/';
     fig_dir = './fig/';
     font_size = 26;
+    colors   = {'r', 'b', [0 0.8 0], 'm', [1 0.85 0], [0 0 0.47], [0.45 0.17 0.48], 'k'};
 
 
     %% --------------------
     %% Variable
     %% --------------------
     fig_idx = 0;
-    
+
 
     %% --------------------
     %% Check input
@@ -69,7 +65,7 @@ function plot_sim(N, L, U, nseed)
         if exist(fullfilename, 'file') == 2
             fprintf('  file: %s\n', fullfilename);
             tmp = load(fullfilename);
-            
+
             data(tmp(:,1), 2) = data(tmp(:,1), 2) + tmp(:,2);
         else
             fprintf('  file not exists: %s\n', fullfilename);
@@ -80,7 +76,7 @@ function plot_sim(N, L, U, nseed)
         fullfilename = [input_dir filename '.txt'];
         if exist(fullfilename, 'file') == 2
             tmp = load(fullfilename);
-            
+
             data2(tmp(:,1)+1, 2) = data2(tmp(:,1)+1, 2) + tmp(:,2);
         end
     end
@@ -103,6 +99,7 @@ function plot_sim(N, L, U, nseed)
     %% --------------------
     fig_param.font_size = font_size;
     fig_param.fig_dir   = fig_dir;
+    fig_param.colors    = colors;
 
     if L~=U
         if L == 1 & U == N
@@ -118,16 +115,17 @@ function plot_sim(N, L, U, nseed)
 
         plot_poisson(data2, L, U, N, fig_param);
     end
-    
+
 end
 
 
 function plot_powerlaw(data, L, U, N, fig_param)
     font_size = fig_param.font_size;
     fig_dir   = fig_param.fig_dir;
+    colors    = fig_param.colors;
 
     fh = figure(1); clf;
-    
+
     %% Data
     norm_scale = sum(data(:,2));
     x_data = data(:,1);
@@ -150,7 +148,7 @@ function plot_powerlaw(data, L, U, N, fig_param)
     exponent = parm(2);
     % lh(2) = plot(x_data(idx), phase2_close_form(parm, x_data(idx)), '-r');
     % set(lh, 'LineWidth', 2);
-    
+
     % values = coeffvalues(fit_curve);
     % a = values(1);
     % exponent = values(2);
@@ -159,24 +157,27 @@ function plot_powerlaw(data, L, U, N, fig_param)
     %% phase 2 - seg 2
     x_pl_seg2 = x_data(idx);
     y_pl_seg2 = a*(x_pl_seg2.^exponent);
-    lh(4) = plot(x_pl_seg2, y_pl_seg2, '-r');
-    set(lh(4), 'LineWidth', 2);
-    
+    lh(4) = plot(x_pl_seg2, y_pl_seg2, '-');
+    set(lh(4), 'Color', colors{1});
+    set(lh(4), 'LineWidth', 5);
+
     %% phase 2 - seg 1
     idx = find(x_data>0 & x_data<=L+1);
     if length(idx) > 0
         x_pl_seg1 = x_data(idx);
         y_pl_seg1 = a*(x_pl_seg1.^exponent);
-        lh2 = plot(x_pl_seg1, y_pl_seg1, '--r');
+        lh2 = plot(x_pl_seg1, y_pl_seg1, '--');
+        set(lh2, 'Color', colors{1});
         set(lh2, 'LineWidth', 2);
     end
-    
+
     %% phase 2 - seg 3
     idx = find(x_data>=U);
     if length(idx) > 0
         x_pl_seg3 = x_data(idx);
         y_pl_seg3 = a*(x_pl_seg3.^exponent);
-        lh2 = plot(x_pl_seg3, y_pl_seg3, '--r');
+        lh2 = plot(x_pl_seg3, y_pl_seg3, '--');
+        set(lh2, 'Color', colors{1});
         set(lh2, 'LineWidth', 2);
     end
 
@@ -189,8 +190,9 @@ function plot_powerlaw(data, L, U, N, fig_param)
         x_p1_seg1 = x_data(idx);
         y_p1_seg1 = ((0.5).^x_p1_seg1)/2;
 
-        lh(3) = plot(x_p1_seg1, y_p1_seg1, '-g');
-        set(lh(3), 'LineWidth', 2);
+        lh(3) = plot(x_p1_seg1, y_p1_seg1, '-');
+        set(lh(3), 'Color', colors{3});
+        set(lh(3), 'LineWidth', 4);
     end
     %% phase 1 - seg 2,3
     idx = find(x_data>=L);
@@ -198,7 +200,8 @@ function plot_powerlaw(data, L, U, N, fig_param)
         x_p1_seg23 = x_data(idx);
         y_p1_seg23 = ((0.5).^x_p1_seg23)/2;
 
-        lh2 = plot(x_p1_seg23, y_p1_seg23, '--g');
+        lh2 = plot(x_p1_seg23, y_p1_seg23, '--');
+        set(lh2, 'Color', colors{3});
         set(lh2, 'LineWidth', 2);
     end
 
@@ -217,8 +220,9 @@ function plot_powerlaw(data, L, U, N, fig_param)
         norm_idx = idx(1);
         alpha = y_data(norm_idx) / y_p3_seg3(norm_idx-idx(1)+1);
 
-        lh(5) = plot(x_p3_seg3, alpha*y_p3_seg3, '-m');
-        set(lh(5), 'LineWidth', 2);
+        lh(5) = plot(x_p3_seg3, alpha*y_p3_seg3, '-');
+        set(lh(5), 'Color', colors{4});
+        set(lh(5), 'LineWidth', 6);
     end
     %% phase 3 - seg 1,2
     idx = find(x_data<=U);
@@ -227,7 +231,8 @@ function plot_powerlaw(data, L, U, N, fig_param)
         y_p3_seg12 = geom_phase3(x_p3_seg12, L, U, gamma-0.6);
         % y_p3_seg12 = geom_phase3(x_p3_seg12, L, U, gamma);
 
-        lh2 = plot(x_p3_seg12, alpha*y_p3_seg12, '--m');
+        lh2 = plot(x_p3_seg12, alpha*y_p3_seg12, '--');
+        set(lh2, 'Color', colors{4});
         set(lh2, 'LineWidth', 2);
     end
 
@@ -236,7 +241,7 @@ function plot_powerlaw(data, L, U, N, fig_param)
     set(gca, 'YLim', [min(y_data(y_data>0)) max(y_data)*1.1]);
 
     set(gca, 'FontSize', font_size);
-    title(sprintf('L=%d,U=%d,exponent=%.2f', L, U, exponent));
+    title(sprintf('L=%d,U=%d,exponent=%.2f', L, U, exponent), 'FontWeight', 'normal', 'FontSize', font_size);
     xlabel('Node Degree', 'FontSize', font_size);
     ylabel('Probability', 'FontSize', font_size);
 
@@ -244,8 +249,8 @@ function plot_powerlaw(data, L, U, N, fig_param)
     set(gca, 'yscale', 'log');
     set(gca, 'XTick', [1 2 3 4 6 10 20 40 100 200 400]);
     set(gca, 'YTick', 10.^[-20:0]);
-    xtics = get(gca,'XTick');
-    set(gca,'XTickLabel',sprintf('%d|',xtics));
+    % xtics = get(gca,'XTick');
+    % set(gca,'XTickLabel',sprintf('%d|',xtics));
 
     h = legend(lh, {'Empirical Data', 'MC:', 'Geom($\frac{\gamma}{\gamma+L}$)', 'Power-Low', 'Geom($\frac{\gamma}{\gamma+U}$)'}, 'location', 'southwest');
     set(h, 'Interpreter', 'latex');
@@ -260,9 +265,10 @@ end
 function plot_phase12_only(data, L, U, N, fig_param)
     font_size = fig_param.font_size;
     fig_dir   = fig_param.fig_dir;
+    colors    = fig_param.colors;
 
     fh = figure(1); clf;
-    
+
     %% Data
     norm_scale = sum(data(:,2));
     x_data = data(:,1);
@@ -285,7 +291,7 @@ function plot_phase12_only(data, L, U, N, fig_param)
     exponent = parm(2);
     % lh(2) = plot(x_data(idx), phase2_close_form(parm, x_data(idx)), '-r');
     % set(lh, 'LineWidth', 2);
-    
+
     % values = coeffvalues(fit_curve);
     % a = values(1);
     % exponent = values(2);
@@ -295,18 +301,20 @@ function plot_phase12_only(data, L, U, N, fig_param)
     idx = find(x_data > L & x_data <= U);
     x_pl_seg2 = x_data(idx);
     y_pl_seg2 = a*(x_pl_seg2.^exponent);
-    lh(4) = plot(x_pl_seg2, y_pl_seg2, '-r');
-    set(lh(4), 'LineWidth', 2);
-    
+    lh(4) = plot(x_pl_seg2, y_pl_seg2, '-');
+    set(lh(4), 'Color', colors{1});
+    set(lh(4), 'LineWidth', 5);
+
     %% phase 2 - seg 1
     idx = find(x_data>0 & x_data<=L+1);
     if length(idx) > 0
         x_pl_seg1 = x_data(idx);
         y_pl_seg1 = a*(x_pl_seg1.^exponent);
-        lh2 = plot(x_pl_seg1, y_pl_seg1, '--r');
+        lh2 = plot(x_pl_seg1, y_pl_seg1, '--');
+        set(lh2, 'Color', colors{1});
         set(lh2, 'LineWidth', 2);
     end
-    
+
 
 
     %% phase 1 - seg 1
@@ -317,8 +325,9 @@ function plot_phase12_only(data, L, U, N, fig_param)
         x_p1_seg1 = x_data(idx);
         y_p1_seg1 = ((0.5).^x_p1_seg1)/2;
 
-        lh(3) = plot(x_p1_seg1, y_p1_seg1, '-g');
-        set(lh(3), 'LineWidth', 2);
+        lh(3) = plot(x_p1_seg1, y_p1_seg1, '-');
+        set(lh(3), 'Color', colors{3});
+        set(lh(3), 'LineWidth', 4);
     end
     %% phase 1 - seg 2,3
     idx = find(x_data>=L);
@@ -326,7 +335,8 @@ function plot_phase12_only(data, L, U, N, fig_param)
         x_p1_seg23 = x_data(idx);
         y_p1_seg23 = ((0.5).^x_p1_seg23)/2;
 
-        lh2 = plot(x_p1_seg23, y_p1_seg23, '--g');
+        lh2 = plot(x_p1_seg23, y_p1_seg23, '--');
+        set(lh2, 'Color', colors{3});
         set(lh2, 'LineWidth', 2);
     end
 
@@ -335,18 +345,18 @@ function plot_phase12_only(data, L, U, N, fig_param)
     set(gca, 'YLim', [min(y_data(y_data>0)) max(y_data)*1.1]);
 
     set(gca, 'FontSize', font_size);
-    title(sprintf('L=%d,U=%d,exponent=%.2f', L, U, exponent));
+    title(sprintf('L=%d,U=%d,exponent=%.2f', L, U, exponent), 'FontWeight', 'normal', 'FontSize', font_size);
     xlabel('Node Degree', 'FontSize', font_size);
     ylabel('Probability', 'FontSize', font_size);
 
     set(gca, 'xscale', 'log');
     set(gca, 'yscale', 'log');
-    set(gca, 'XTick', [1 2 3 4 5 6 8 10 20 40 100 200 400]);
+    set(gca, 'XTick', [1 2 3 4 6 10 20 40 100 200 400]);
     set(gca, 'YTick', 10.^[-20:0]);
-    xtics = get(gca,'XTick');
-    set(gca,'XTickLabel',sprintf('%d|',xtics));
+    % xtics = get(gca,'XTick');
+    % set(gca,'XTickLabel',sprintf('%d|',xtics));
 
-    h = legend(lh, {'Empirical Data', 'MC:', 'Geom($\frac{\gamma}{\gamma+L}$)', 'Power-Low'}, 'location', 'southwest');
+    h = legend(lh, {'Empirical Data', 'MC:', 'Geom($\frac{\gamma}{\gamma+L}$)', 'Power-Low'}, 'location', 'northeast');
     set(h, 'Interpreter', 'latex');
     leg_pos = get(h, 'position');
     set(h, 'position',[leg_pos(1)*0.95,leg_pos(2),...
@@ -359,6 +369,7 @@ end
 function plot_powerlaw_only(data, L, U, N, fig_param)
     font_size = fig_param.font_size;
     fig_dir   = fig_param.fig_dir;
+    colors    = fig_param.colors;
 
     fh = figure(2); clf;
 
@@ -381,7 +392,7 @@ function plot_powerlaw_only(data, L, U, N, fig_param)
     %% fitting and plot
     % idx = find(x_data >=5 & x_data <= 100);
     % [fit_curve, gof] = fit(x_data(idx), y_data(idx), 'power1');
-    
+
     % values = coeffvalues(fit_curve);
     % exponent = values(2);
 
@@ -393,8 +404,9 @@ function plot_powerlaw_only(data, L, U, N, fig_param)
     a = parm(1);
     exponent = parm(2);
 
-    lh = plot(x_data, phase2_close_form(parm, x_data), '-r');
-    set(lh, 'LineWidth', 2);
+    lh = plot(x_data, phase2_close_form(parm, x_data), '-');
+    set(lh, 'Color', colors{1});
+    set(lh, 'LineWidth', 3);
     %% -------------
 
 
@@ -402,7 +414,7 @@ function plot_powerlaw_only(data, L, U, N, fig_param)
     set(gca, 'YLim', [min(y_data(y_data>0)) max(y_data)*1.1]);
 
     set(gca, 'FontSize', font_size);
-    title(sprintf('L=%d,U=%d,exponent=%.2f', L, U, exponent));
+    title(sprintf('L=%d,U=%d,exponent=%.2f', L, U, exponent), 'FontWeight', 'normal', 'FontSize', font_size);
     xlabel('Node Degree', 'FontSize', font_size);
     ylabel('Probability', 'FontSize', font_size);
 
@@ -410,8 +422,6 @@ function plot_powerlaw_only(data, L, U, N, fig_param)
     set(gca, 'yscale', 'log');
     set(gca, 'XTick', [1 2 3 4 6 10 20 40 100 400]);
     set(gca, 'YTick', 10.^[-20:0]);
-    xtics = get(gca,'XTick');
-    set(gca,'XTickLabel',sprintf('%d|',xtics));
 
     legend('Empirical Data', 'Power-Low');
 
@@ -422,6 +432,7 @@ end
 function plot_exp(data, L, U, N, fig_param)
     font_size = fig_param.font_size;
     fig_dir   = fig_param.fig_dir;
+    colors    = fig_param.colors;
 
     fh = figure(2); clf;
 
@@ -443,8 +454,9 @@ function plot_exp(data, L, U, N, fig_param)
     %% -------------
     %% fitting and plot
     [fit_curve, gof] = fit(x_data, y_data, 'exp1');
-    lh = plot(x_data, fit_curve(x_data), '-r');
-    set(lh, 'LineWidth', 2);
+    lh = plot(x_data, fit_curve(x_data), '-');
+    set(lh, 'Color', colors{1});
+    set(lh, 'LineWidth', 3);
     %% -------------
 
 
@@ -452,7 +464,7 @@ function plot_exp(data, L, U, N, fig_param)
     set(gca, 'YLim', [min(y_data) max(y_data)*1.1]);
 
     set(gca, 'FontSize', font_size);
-    title(sprintf('L=%d,U=%d', L, U));
+    title(sprintf('L=%d,U=%d', L, U), 'FontWeight', 'normal', 'FontSize', font_size);
     xlabel('Node Degree', 'FontSize', font_size);
     ylabel('Probability', 'FontSize', font_size);
 
@@ -460,67 +472,19 @@ function plot_exp(data, L, U, N, fig_param)
     set(gca, 'yscale', 'log');
     set(gca, 'XTick', [1 2 3 4 5 6 8 10 20 40 100 200 400]);
     set(gca, 'YTick', 10.^[-20:0]);
-    xtics = get(gca,'XTick');
-    set(gca,'XTickLabel',sprintf('%d|',xtics));
+    % xtics = get(gca,'XTick');
+    % set(gca,'XTickLabel',sprintf('%d|',xtics));
 
     legend('Empirical Data', 'Exponential', 'Location', 'SouthWest');
 
     print(fh, '-dpsc', sprintf('%sL%dU%dN%d-exp.eps', fig_dir, L, U, N));
 end
 
-function plot_lognormal(data, L, U, N, fig_param)
-    font_size = fig_param.font_size;
-    fig_dir   = fig_param.fig_dir;
-
-    fh = figure(3); clf;
-
-    %% --------------
-    %% w/o 0s
-    idx = find(data(:,1) > 0);
-    data = data(idx,:);
-    %% --------------
-
-    norm_scale = sum(data(:,2));
-    x_data = data(:,1);
-    y_data = data(:,2)/norm_scale;
-    lh = plot(x_data, y_data, 'bo');
-    set(lh, 'MarkerSize', 15);
-    set(lh, 'LineWidth', 2);
-    hold on;
-
-
-    %% -------------
-    %% fitting and plot
-    func = @(parm,x)lognpdf(x,parm(1),parm(2));
-    parm = lsqcurvefit(func, [1 0.1], x_data, y_data);
-    lh = plot(x_data, lognpdf(x_data, parm(1), parm(2)), '-r');
-    set(lh, 'LineWidth', 2);
-    %% -------------
-
-
-    set(gca, 'XLim', [min(x_data) max(x_data)]);
-    set(gca, 'YLim', [min(y_data) max(y_data)*1.1]);
-
-    set(gca, 'FontSize', font_size);
-    title(sprintf('L=%d,U=%d', L, U));
-    xlabel('Node Degree', 'FontSize', font_size);
-    ylabel('Probability', 'FontSize', font_size);
-
-    set(gca, 'xscale', 'log');
-    set(gca, 'yscale', 'log');
-    set(gca, 'XTick', [1 2 3 4 5 6 8 10 20 40 100 200 400]);
-    set(gca, 'YTick', 10.^[-20:0]);
-    xtics = get(gca,'XTick');
-    set(gca,'XTickLabel',sprintf('%d|',xtics));
-
-    legend('Empirical Data', 'Lognormal');
-
-    print(fh, '-dpsc', sprintf('%sL%dU%dN%d-lognormal.eps', fig_dir, L, U, N));
-end
 
 function plot_poisson(data, L, U, N, fig_param)
     font_size = fig_param.font_size;
     fig_dir   = fig_param.fig_dir;
+    colors    = fig_param.colors;
 
     fh = figure(3); clf;
 
@@ -543,8 +507,9 @@ function plot_poisson(data, L, U, N, fig_param)
     %% fitting and plot
     func = @(parm,x)poisspdf(x,parm);
     parm = lsqcurvefit(func, 1, x_data, y_data);
-    lh = plot(x_data, poisspdf(x_data, parm), '-r');
-    set(lh, 'LineWidth', 2);
+    lh = plot(x_data, poisspdf(x_data, parm), '-');
+    set(lh, 'Color', colors{1});
+    set(lh, 'LineWidth', 3);
     %% -------------
 
 
@@ -552,7 +517,7 @@ function plot_poisson(data, L, U, N, fig_param)
     set(gca, 'YLim', [min(y_data) max(y_data)*1.1]);
 
     set(gca, 'FontSize', font_size);
-    title(sprintf('L=%d,U=%d', L, U));
+    title(sprintf('L=%d,U=%d', L, U), 'FontWeight', 'normal', 'FontSize', font_size);
     xlabel('Node Degree', 'FontSize', font_size);
     ylabel('Probability', 'FontSize', font_size);
 

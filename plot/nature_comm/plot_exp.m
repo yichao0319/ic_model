@@ -2,19 +2,21 @@ function plot_exp
     input_dir = './data/exp/';
     fig_dir   = './fig/';
     font_size = 26;
+    colors   = {'r', 'b', [0 0.8 0], 'm', [1 0.85 0], [0 0 0.47], [0.45 0.17 0.48], 'k'};
+
     legends = {'Empirical Data', 'MC:Geom($\frac{\gamma}{\gamma+L}$)', 'MC:Power-Low', 'MC:Geom($\frac{\gamma}{\gamma+U}$)'};
 
-    plot_coauthor(input_dir, fig_dir, font_size, legends);
-    plot_dblp(input_dir, fig_dir, font_size, legends);
-    plot_coauthor_network(input_dir, fig_dir, font_size, legends);
-    plot_dblp_network(input_dir, fig_dir, font_size, legends);
-    plot_aps(input_dir, fig_dir, font_size, legends);    
-    plot_patent(input_dir, fig_dir, font_size, legends);
-    plot_facebook(input_dir, fig_dir, font_size, legends);    
-    plot_twitter(input_dir, fig_dir, font_size, legends);
-    plot_rome(input_dir, fig_dir, font_size, legends);    
-    plot_beijing(input_dir, fig_dir, font_size, legends);
-    plot_sf(input_dir, fig_dir, font_size, legends);    
+    plot_coauthor(input_dir, fig_dir, font_size, legends, colors);
+    plot_dblp(input_dir, fig_dir, font_size, legends, colors);
+    plot_coauthor_network(input_dir, fig_dir, font_size, legends, colors);
+    plot_dblp_network(input_dir, fig_dir, font_size, legends, colors);
+    plot_aps(input_dir, fig_dir, font_size, legends, colors);
+    plot_patent(input_dir, fig_dir, font_size, legends, colors);
+    plot_facebook(input_dir, fig_dir, font_size, legends, colors);
+    plot_twitter(input_dir, fig_dir, font_size, legends, colors);
+    plot_rome(input_dir, fig_dir, font_size, legends, colors);
+    plot_beijing(input_dir, fig_dir, font_size, legends, colors);
+    plot_sf(input_dir, fig_dir, font_size, legends, colors);
 end
 
 
@@ -36,7 +38,7 @@ function [data, param, esty1, esty2, esty3, esty1_others, esty2_others, esty3_ot
 end
 
 
-function plot_coauthor(input_dir, fig_dir, font_size, legends)
+function plot_coauthor(input_dir, fig_dir, font_size, legends, colors)
     %% ---------------------------
     %% Coauthor
     filename = 'fit_auto.publications.num_coauthor_all_authors';
@@ -46,18 +48,24 @@ function plot_coauthor(input_dir, fig_dir, font_size, legends)
     lhs(1) = plot(data(:,1), data(:,2), 'bo');
     set(lhs(1), 'MarkerSize', 15);
     hold on;
-    lhs(2) = plot(esty1(:,1), esty1(:,2), '-g');
-    set(lhs(2), 'LineWidth', 3);
-    lhs(3) = plot(esty2(:,1), esty2(:,2), '-r');
-    set(lhs(3), 'LineWidth', 4);
-    lhs(4) = plot(esty3(:,1), esty3(:,2), '-m');
-    set(lhs(4), 'LineWidth', 5);
+    lhs(2) = plot(esty1(:,1), esty1(:,2), '-');
+    set(lhs(2), 'Color', colors{3});
+    set(lhs(2), 'LineWidth', 5);
+    lhs(3) = plot(esty2(:,1), esty2(:,2), '-');
+    set(lhs(3), 'Color', colors{1});
+    set(lhs(3), 'LineWidth', 7);
+    lhs(4) = plot(esty3(:,1), esty3(:,2), '-');
+    set(lhs(4), 'Color', colors{4});
+    set(lhs(4), 'LineWidth', 9);
 
-    lh = plot(esty1_others(:,1), esty1_others(:,2), '--g');
+    lh = plot(esty1_others(:,1), esty1_others(:,2), '--');
+    set(lh, 'Color', colors{3});
     set(lh, 'LineWidth', 2);
-    lh = plot(esty2_others(:,1), esty2_others(:,2), '--r');
+    lh = plot(esty2_others(:,1), esty2_others(:,2), '--');
+    set(lh, 'Color', colors{1});
     set(lh, 'LineWidth', 2);
-    lh = plot(esty3_others(:,1), esty3_others(:,2), '--m');
+    lh = plot(esty3_others(:,1), esty3_others(:,2), '--');
+    set(lh, 'Color', colors{4});
     set(lh, 'LineWidth', 2);
 
     set(gca, 'FontSize', font_size);
@@ -86,28 +94,34 @@ function plot_coauthor(input_dir, fig_dir, font_size, legends)
 end
 
 
-function plot_dblp(input_dir, fig_dir, font_size, legends)
+function plot_dblp(input_dir, fig_dir, font_size, legends, colors)
     %% ---------------------------
     %% DBLP
     filename = 'fit_auto.publications.num_cite_all_papers';
     [data, param, esty1, esty2, esty3, esty1_others, esty2_others, esty3_others] = get_data(input_dir, filename);
-    
+
     fh = figure(1); clf;
     lhs(1) = plot(data(:,1), data(:,2), 'bo');
     set(lhs(1), 'MarkerSize', 15);
     hold on;
-    lhs(2) = plot(esty1(:,1), esty1(:,2), '-g');
-    set(lhs(2), 'LineWidth', 3);
-    lhs(3) = plot(esty2(:,1), esty2(:,2), '-r');
-    set(lhs(3), 'LineWidth', 4);
-    lhs(4) = plot(esty3(:,1), esty3(:,2), '-m');
-    set(lhs(4), 'LineWidth', 5);
+    lhs(2) = plot(esty1(:,1), esty1(:,2), '-');
+    set(lhs(2), 'Color', colors{3});
+    set(lhs(2), 'LineWidth', 5);
+    lhs(3) = plot(esty2(:,1), esty2(:,2), '-');
+    set(lhs(3), 'Color', colors{1});
+    set(lhs(3), 'LineWidth', 7);
+    lhs(4) = plot(esty3(:,1), esty3(:,2), '-');
+    set(lhs(4), 'Color', colors{4});
+    set(lhs(4), 'LineWidth', 9);
 
-    lh = plot(esty1_others(:,1), esty1_others(:,2), '--g');
+    lh = plot(esty1_others(:,1), esty1_others(:,2), '--');
+    set(lh, 'Color', colors{3});
     set(lh, 'LineWidth', 2);
-    lh = plot(esty2_others(:,1), esty2_others(:,2), '--r');
+    lh = plot(esty2_others(:,1), esty2_others(:,2), '--');
+    set(lh, 'Color', colors{1});
     set(lh, 'LineWidth', 2);
-    lh = plot(esty3_others(:,1), esty3_others(:,2), '--m');
+    lh = plot(esty3_others(:,1), esty3_others(:,2), '--');
+    set(lh, 'Color', colors{4});
     set(lh, 'LineWidth', 2);
 
     set(gca, 'FontSize', font_size);
@@ -136,28 +150,34 @@ function plot_dblp(input_dir, fig_dir, font_size, legends)
 end
 
 
-function plot_coauthor_network(input_dir, fig_dir, font_size, legends)
+function plot_coauthor_network(input_dir, fig_dir, font_size, legends, colors)
     %% ---------------------------
     %% Coauthor - Networking
     filename = 'fit_auto.networks.num_coauthor_all_authors';
     [data, param, esty1, esty2, esty3, esty1_others, esty2_others, esty3_others] = get_data(input_dir, filename);
-    
+
     fh = figure(1); clf;
     lhs(1) = plot(data(:,1), data(:,2), 'bo');
     set(lhs(1), 'MarkerSize', 15);
     hold on;
-    lhs(2) = plot(esty1(:,1), esty1(:,2), '-g');
-    set(lhs(2), 'LineWidth', 3);
-    lhs(3) = plot(esty2(:,1), esty2(:,2), '-r');
-    set(lhs(3), 'LineWidth', 4);
-    lhs(4) = plot(esty3(:,1), esty3(:,2), '-m');
-    set(lhs(4), 'LineWidth', 5);
+    lhs(2) = plot(esty1(:,1), esty1(:,2), '-');
+    set(lhs(2), 'Color', colors{3});
+    set(lhs(2), 'LineWidth', 5);
+    lhs(3) = plot(esty2(:,1), esty2(:,2), '-');
+    set(lhs(3), 'Color', colors{1});
+    set(lhs(3), 'LineWidth', 7);
+    lhs(4) = plot(esty3(:,1), esty3(:,2), '-');
+    set(lhs(4), 'Color', colors{4});
+    set(lhs(4), 'LineWidth', 9);
 
-    lh = plot(esty1_others(:,1), esty1_others(:,2), '--g');
+    lh = plot(esty1_others(:,1), esty1_others(:,2), '--');
+    set(lh, 'Color', colors{3});
     set(lh, 'LineWidth', 2);
-    lh = plot(esty2_others(:,1), esty2_others(:,2), '--r');
+    lh = plot(esty2_others(:,1), esty2_others(:,2), '--');
+    set(lh, 'Color', colors{1});
     set(lh, 'LineWidth', 2);
-    lh = plot(esty3_others(:,1), esty3_others(:,2), '--m');
+    lh = plot(esty3_others(:,1), esty3_others(:,2), '--');
+    set(lh, 'Color', colors{4});
     set(lh, 'LineWidth', 2);
 
     set(gca, 'FontSize', font_size);
@@ -184,28 +204,34 @@ function plot_coauthor_network(input_dir, fig_dir, font_size, legends)
     print(fh, '-dpsc', sprintf('%s%s.eps', fig_dir, figname));
 end
 
-function plot_dblp_network(input_dir, fig_dir, font_size, legends)
+function plot_dblp_network(input_dir, fig_dir, font_size, legends, colors)
     %% ---------------------------
     %% DBLP - Networking
     filename = 'fit_auto.networks.num_cite_all_papers';
     [data, param, esty1, esty2, esty3, esty1_others, esty2_others, esty3_others] = get_data(input_dir, filename);
-    
+
     fh = figure(1); clf;
     lhs(1) = plot(data(:,1), data(:,2), 'bo');
     set(lhs(1), 'MarkerSize', 15);
     hold on;
-    lhs(2) = plot(esty1(:,1), esty1(:,2), '-g');
-    set(lhs(2), 'LineWidth', 3);
-    lhs(3) = plot(esty2(:,1), esty2(:,2), '-r');
-    set(lhs(3), 'LineWidth', 4);
-    lhs(4) = plot(esty3(:,1), esty3(:,2), '-m');
-    set(lhs(4), 'LineWidth', 5);
+    lhs(2) = plot(esty1(:,1), esty1(:,2), '-');
+    set(lhs(2), 'Color', colors{3});
+    set(lhs(2), 'LineWidth', 5);
+    lhs(3) = plot(esty2(:,1), esty2(:,2), '-');
+    set(lhs(3), 'Color', colors{1});
+    set(lhs(3), 'LineWidth', 7);
+    lhs(4) = plot(esty3(:,1), esty3(:,2), '-');
+    set(lhs(4), 'Color', colors{4});
+    set(lhs(4), 'LineWidth', 9);
 
-    lh = plot(esty1_others(:,1), esty1_others(:,2), '--g');
+    lh = plot(esty1_others(:,1), esty1_others(:,2), '--');
+    set(lh, 'Color', colors{3});
     set(lh, 'LineWidth', 2);
-    lh = plot(esty2_others(:,1), esty2_others(:,2), '--r');
+    lh = plot(esty2_others(:,1), esty2_others(:,2), '--');
+    set(lh, 'Color', colors{1});
     set(lh, 'LineWidth', 2);
-    lh = plot(esty3_others(:,1), esty3_others(:,2), '--m');
+    lh = plot(esty3_others(:,1), esty3_others(:,2), '--');
+    set(lh, 'Color', colors{4});
     set(lh, 'LineWidth', 2);
 
     set(gca, 'FontSize', font_size);
@@ -233,28 +259,34 @@ function plot_dblp_network(input_dir, fig_dir, font_size, legends)
 end
 
 
-function plot_aps(input_dir, fig_dir, font_size, legends)
+function plot_aps(input_dir, fig_dir, font_size, legends, colors)
     %% ---------------------------
     %% APS
     filename = 'fit_auto.aps-dataset-citations-2013';
     [data, param, esty1, esty2, esty3, esty1_others, esty2_others, esty3_others] = get_data(input_dir, filename);
-    
+
     fh = figure(1); clf;
     lhs(1) = plot(data(:,1), data(:,2), 'bo');
     set(lhs(1), 'MarkerSize', 15);
     hold on;
-    lhs(2) = plot(esty1(:,1), esty1(:,2), '-g');
-    set(lhs(2), 'LineWidth', 3);
-    lhs(3) = plot(esty2(:,1), esty2(:,2), '-r');
-    set(lhs(3), 'LineWidth', 4);
-    lhs(4) = plot(esty3(:,1), esty3(:,2), '-m');
-    set(lhs(4), 'LineWidth', 5);
+    lhs(2) = plot(esty1(:,1), esty1(:,2), '-');
+    set(lhs(2), 'Color', colors{3});
+    set(lhs(2), 'LineWidth', 5);
+    lhs(3) = plot(esty2(:,1), esty2(:,2), '-');
+    set(lhs(3), 'Color', colors{1});
+    set(lhs(3), 'LineWidth', 7);
+    lhs(4) = plot(esty3(:,1), esty3(:,2), '-');
+    set(lhs(4), 'Color', colors{4});
+    set(lhs(4), 'LineWidth', 9);
 
-    lh = plot(esty1_others(:,1), esty1_others(:,2), '--g');
+    lh = plot(esty1_others(:,1), esty1_others(:,2), '--');
+    set(lh, 'Color', colors{3});
     set(lh, 'LineWidth', 2);
-    lh = plot(esty2_others(:,1), esty2_others(:,2), '--r');
+    lh = plot(esty2_others(:,1), esty2_others(:,2), '--');
+    set(lh, 'Color', colors{1});
     set(lh, 'LineWidth', 2);
-    lh = plot(esty3_others(:,1), esty3_others(:,2), '--m');
+    lh = plot(esty3_others(:,1), esty3_others(:,2), '--');
+    set(lh, 'Color', colors{4});
     set(lh, 'LineWidth', 2);
 
     set(gca, 'FontSize', font_size);
@@ -283,28 +315,34 @@ function plot_aps(input_dir, fig_dir, font_size, legends)
     print(fh, '-dpsc', sprintf('%s%s.eps', fig_dir, figname));
 end
 
-function plot_patent(input_dir, fig_dir, font_size, legends)
+function plot_patent(input_dir, fig_dir, font_size, legends, colors)
     %% ---------------------------
     %% US Patent
     filename = 'fit_auto.cit-Patents';
     [data, param, esty1, esty2, esty3, esty1_others, esty2_others, esty3_others] = get_data(input_dir, filename);
-    
+
     fh = figure(1); clf;
     lhs(1) = plot(data(:,1), data(:,2), 'bo');
     set(lhs(1), 'MarkerSize', 15);
     hold on;
-    lhs(2) = plot(esty1(:,1), esty1(:,2), '-g');
-    set(lhs(2), 'LineWidth', 3);
-    lhs(3) = plot(esty2(:,1), esty2(:,2), '-r');
-    set(lhs(3), 'LineWidth', 4);
-    lhs(4) = plot(esty3(:,1), esty3(:,2), '-m');
-    set(lhs(4), 'LineWidth', 5);
+    lhs(2) = plot(esty1(:,1), esty1(:,2), '-');
+    set(lhs(2), 'Color', colors{3});
+    set(lhs(2), 'LineWidth', 5);
+    lhs(3) = plot(esty2(:,1), esty2(:,2), '-');
+    set(lhs(3), 'Color', colors{1});
+    set(lhs(3), 'LineWidth', 7);
+    lhs(4) = plot(esty3(:,1), esty3(:,2), '-');
+    set(lhs(4), 'Color', colors{4});
+    set(lhs(4), 'LineWidth', 9);
 
-    lh = plot(esty1_others(:,1), esty1_others(:,2), '--g');
+    lh = plot(esty1_others(:,1), esty1_others(:,2), '--');
+    set(lh, 'Color', colors{3});
     set(lh, 'LineWidth', 2);
-    lh = plot(esty2_others(:,1), esty2_others(:,2), '--r');
+    lh = plot(esty2_others(:,1), esty2_others(:,2), '--');
+    set(lh, 'Color', colors{1});
     set(lh, 'LineWidth', 2);
-    lh = plot(esty3_others(:,1), esty3_others(:,2), '--m');
+    lh = plot(esty3_others(:,1), esty3_others(:,2), '--');
+    set(lh, 'Color', colors{4});
     set(lh, 'LineWidth', 2);
 
     set(gca, 'FontSize', font_size);
@@ -332,28 +370,34 @@ function plot_patent(input_dir, fig_dir, font_size, legends)
 end
 
 
-function plot_facebook(input_dir, fig_dir, font_size, legends)
+function plot_facebook(input_dir, fig_dir, font_size, legends, colors)
     %% ---------------------------
-    %% Facebook 
+    %% Facebook
     filename = 'fit_auto.facebook_combined';
     [data, param, esty1, esty2, esty3, esty1_others, esty2_others, esty3_others] = get_data(input_dir, filename);
-    
+
     fh = figure(1); clf;
     lhs(1) = plot(data(:,1), data(:,2), 'bo');
     set(lhs(1), 'MarkerSize', 15);
     hold on;
-    lhs(2) = plot(esty1(:,1), esty1(:,2), '-g');
-    set(lhs(2), 'LineWidth', 3);
-    lhs(3) = plot(esty2(:,1), esty2(:,2), '-r');
-    set(lhs(3), 'LineWidth', 4);
-    lhs(4) = plot(esty3(:,1), esty3(:,2), '-m');
-    set(lhs(4), 'LineWidth', 5);
+    lhs(2) = plot(esty1(:,1), esty1(:,2), '-');
+    set(lhs(2), 'Color', colors{3});
+    set(lhs(2), 'LineWidth', 5);
+    lhs(3) = plot(esty2(:,1), esty2(:,2), '-');
+    set(lhs(3), 'Color', colors{1});
+    set(lhs(3), 'LineWidth', 7);
+    lhs(4) = plot(esty3(:,1), esty3(:,2), '-');
+    set(lhs(4), 'Color', colors{4});
+    set(lhs(4), 'LineWidth', 9);
 
-    lh = plot(esty1_others(:,1), esty1_others(:,2), '--g');
+    lh = plot(esty1_others(:,1), esty1_others(:,2), '--');
+    set(lh, 'Color', colors{3});
     set(lh, 'LineWidth', 2);
-    lh = plot(esty2_others(:,1), esty2_others(:,2), '--r');
+    lh = plot(esty2_others(:,1), esty2_others(:,2), '--');
+    set(lh, 'Color', colors{1});
     set(lh, 'LineWidth', 2);
-    lh = plot(esty3_others(:,1), esty3_others(:,2), '--m');
+    lh = plot(esty3_others(:,1), esty3_others(:,2), '--');
+    set(lh, 'Color', colors{4});
     set(lh, 'LineWidth', 2);
 
     set(gca, 'FontSize', font_size);
@@ -382,28 +426,34 @@ function plot_facebook(input_dir, fig_dir, font_size, legends)
 end
 
 
-function plot_twitter(input_dir, fig_dir, font_size, legends)
+function plot_twitter(input_dir, fig_dir, font_size, legends, colors)
     %% ---------------------------
     %% Twitter
     filename = 'fit_auto.twitter_combined';
     [data, param, esty1, esty2, esty3, esty1_others, esty2_others, esty3_others] = get_data(input_dir, filename);
-    
+
     fh = figure(1); clf;
     lhs(1) = plot(data(:,1), data(:,2), 'bo');
     set(lhs(1), 'MarkerSize', 15);
     hold on;
-    lhs(2) = plot(esty1(:,1), esty1(:,2), '-g');
-    set(lhs(2), 'LineWidth', 3);
-    lhs(3) = plot(esty2(:,1), esty2(:,2), '-r');
-    set(lhs(3), 'LineWidth', 4);
-    lhs(4) = plot(esty3(:,1), esty3(:,2), '-m');
-    set(lhs(4), 'LineWidth', 5);
+    lhs(2) = plot(esty1(:,1), esty1(:,2), '-');
+    set(lhs(2), 'Color', colors{3});
+    set(lhs(2), 'LineWidth', 5);
+    lhs(3) = plot(esty2(:,1), esty2(:,2), '-');
+    set(lhs(3), 'Color', colors{1});
+    set(lhs(3), 'LineWidth', 7);
+    lhs(4) = plot(esty3(:,1), esty3(:,2), '-');
+    set(lhs(4), 'Color', colors{4});
+    set(lhs(4), 'LineWidth', 9);
 
-    lh = plot(esty1_others(:,1), esty1_others(:,2), '--g');
+    lh = plot(esty1_others(:,1), esty1_others(:,2), '--');
+    set(lh, 'Color', colors{3});
     set(lh, 'LineWidth', 2);
-    lh = plot(esty2_others(:,1), esty2_others(:,2), '--r');
+    lh = plot(esty2_others(:,1), esty2_others(:,2), '--');
+    set(lh, 'Color', colors{1});
     set(lh, 'LineWidth', 2);
-    lh = plot(esty3_others(:,1), esty3_others(:,2), '--m');
+    lh = plot(esty3_others(:,1), esty3_others(:,2), '--');
+    set(lh, 'Color', colors{4});
     set(lh, 'LineWidth', 2);
 
     set(gca, 'FontSize', font_size);
@@ -431,28 +481,34 @@ function plot_twitter(input_dir, fig_dir, font_size, legends)
 end
 
 
-function plot_rome(input_dir, fig_dir, font_size, legends)
+function plot_rome(input_dir, fig_dir, font_size, legends, colors)
     %% ---------------------------
     %% Rome - Contact Count
     filename = 'fit_auto.rome_taxi.counts.120.1000';
     [data, param, esty1, esty2, esty3, esty1_others, esty2_others, esty3_others] = get_data(input_dir, filename);
-    
+
     fh = figure(1); clf;
     lhs(1) = plot(data(:,1), data(:,2), 'bo');
     set(lhs(1), 'MarkerSize', 15);
     hold on;
-    lhs(2) = plot(esty1(:,1), esty1(:,2), '-g');
-    set(lhs(2), 'LineWidth', 3);
-    lhs(3) = plot(esty2(:,1), esty2(:,2), '-r');
-    set(lhs(3), 'LineWidth', 4);
-    lhs(4) = plot(esty3(:,1), esty3(:,2), '-m');
-    set(lhs(4), 'LineWidth', 5);
+    lhs(2) = plot(esty1(:,1), esty1(:,2), '-');
+    set(lhs(2), 'Color', colors{3});
+    set(lhs(2), 'LineWidth', 5);
+    lhs(3) = plot(esty2(:,1), esty2(:,2), '-');
+    set(lhs(3), 'Color', colors{1});
+    set(lhs(3), 'LineWidth', 7);
+    lhs(4) = plot(esty3(:,1), esty3(:,2), '-');
+    set(lhs(4), 'Color', colors{4});
+    set(lhs(4), 'LineWidth', 9);
 
-    lh = plot(esty1_others(:,1), esty1_others(:,2), '--g');
+    lh = plot(esty1_others(:,1), esty1_others(:,2), '--');
+    set(lh, 'Color', colors{3});
     set(lh, 'LineWidth', 2);
-    lh = plot(esty2_others(:,1), esty2_others(:,2), '--r');
+    lh = plot(esty2_others(:,1), esty2_others(:,2), '--');
+    set(lh, 'Color', colors{1});
     set(lh, 'LineWidth', 2);
-    lh = plot(esty3_others(:,1), esty3_others(:,2), '--m');
+    lh = plot(esty3_others(:,1), esty3_others(:,2), '--');
+    set(lh, 'Color', colors{4});
     set(lh, 'LineWidth', 2);
 
     set(gca, 'FontSize', font_size);
@@ -480,28 +536,34 @@ function plot_rome(input_dir, fig_dir, font_size, legends)
 end
 
 
-function plot_beijing(input_dir, fig_dir, font_size, legends)
+function plot_beijing(input_dir, fig_dir, font_size, legends, colors)
     %% ---------------------------
     %% Beijing - Contact Count
     filename = 'fit_auto.beijing_taxi.counts.300.300';
     [data, param, esty1, esty2, esty3, esty1_others, esty2_others, esty3_others] = get_data(input_dir, filename);
-    
+
     fh = figure(1); clf;
     lhs(1) = plot(data(:,1), data(:,2), 'bo');
     set(lhs(1), 'MarkerSize', 15);
     hold on;
-    lhs(2) = plot(esty1(:,1), esty1(:,2), '-g');
-    set(lhs(2), 'LineWidth', 3);
-    lhs(3) = plot(esty2(:,1), esty2(:,2), '-r');
-    set(lhs(3), 'LineWidth', 4);
-    lhs(4) = plot(esty3(:,1), esty3(:,2), '-m');
-    set(lhs(4), 'LineWidth', 5);
+    lhs(2) = plot(esty1(:,1), esty1(:,2), '-');
+    set(lhs(2), 'Color', colors{3});
+    set(lhs(2), 'LineWidth', 5);
+    lhs(3) = plot(esty2(:,1), esty2(:,2), '-');
+    set(lhs(3), 'Color', colors{1});
+    set(lhs(3), 'LineWidth', 7);
+    lhs(4) = plot(esty3(:,1), esty3(:,2), '-');
+    set(lhs(4), 'Color', colors{4});
+    set(lhs(4), 'LineWidth', 9);
 
-    lh = plot(esty1_others(:,1), esty1_others(:,2), '--g');
+    lh = plot(esty1_others(:,1), esty1_others(:,2), '--');
+    set(lh, 'Color', colors{3});
     set(lh, 'LineWidth', 2);
-    lh = plot(esty2_others(:,1), esty2_others(:,2), '--r');
+    lh = plot(esty2_others(:,1), esty2_others(:,2), '--');
+    set(lh, 'Color', colors{1});
     set(lh, 'LineWidth', 2);
-    lh = plot(esty3_others(:,1), esty3_others(:,2), '--m');
+    lh = plot(esty3_others(:,1), esty3_others(:,2), '--');
+    set(lh, 'Color', colors{4});
     set(lh, 'LineWidth', 2);
 
     set(gca, 'FontSize', font_size);
@@ -531,28 +593,34 @@ function plot_beijing(input_dir, fig_dir, font_size, legends)
 end
 
 
-function plot_sf(input_dir, fig_dir, font_size, legends)
+function plot_sf(input_dir, fig_dir, font_size, legends, colors)
     %% ---------------------------
     %% SF - Contact Count
     filename = 'fit_auto.sf_taxi.counts.120.1000';
     [data, param, esty1, esty2, esty3, esty1_others, esty2_others, esty3_others] = get_data(input_dir, filename);
-    
+
     fh = figure(1); clf;
     lhs(1) = plot(data(:,1), data(:,2), 'bo');
     set(lhs(1), 'MarkerSize', 15);
     hold on;
-    lhs(2) = plot(esty1(:,1), esty1(:,2), '-g');
-    set(lhs(2), 'LineWidth', 3);
-    lhs(3) = plot(esty2(:,1), esty2(:,2), '-r');
-    set(lhs(3), 'LineWidth', 4);
-    lhs(4) = plot(esty3(:,1), esty3(:,2), '-m');
-    set(lhs(4), 'LineWidth', 5);
+    lhs(2) = plot(esty1(:,1), esty1(:,2), '-');
+    set(lhs(2), 'Color', colors{3});
+    set(lhs(2), 'LineWidth', 5);
+    lhs(3) = plot(esty2(:,1), esty2(:,2), '-');
+    set(lhs(3), 'Color', colors{1});
+    set(lhs(3), 'LineWidth', 7);
+    lhs(4) = plot(esty3(:,1), esty3(:,2), '-');
+    set(lhs(4), 'Color', colors{4});
+    set(lhs(4), 'LineWidth', 9);
 
-    lh = plot(esty1_others(:,1), esty1_others(:,2), '--g');
+    lh = plot(esty1_others(:,1), esty1_others(:,2), '--');
+    set(lh, 'Color', colors{3});
     set(lh, 'LineWidth', 2);
-    lh = plot(esty2_others(:,1), esty2_others(:,2), '--r');
+    lh = plot(esty2_others(:,1), esty2_others(:,2), '--');
+    set(lh, 'Color', colors{1});
     set(lh, 'LineWidth', 2);
-    lh = plot(esty3_others(:,1), esty3_others(:,2), '--m');
+    lh = plot(esty3_others(:,1), esty3_others(:,2), '--');
+    set(lh, 'Color', colors{4});
     set(lh, 'LineWidth', 2);
 
     set(gca, 'FontSize', font_size);
