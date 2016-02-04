@@ -47,7 +47,7 @@ function sim_ic_model_internal_link_v2(N, L, U, itvl, sel_type)
         %% ---------------------
         prob = k_hat(A(1:i)) / sum(k_hat(A(1:i)));
         cdf = cumsum(prob);
-        
+
         realized = rand;
         idx = find(cdf > realized);
         idx = idx(1);
@@ -74,7 +74,7 @@ function sim_ic_model_internal_link_v2(N, L, U, itvl, sel_type)
             else
                 error('wrong selection type');
             end
-            
+
             if strcmp(sel_type, 'cal')
                 k(A(idx1)) = k(A(idx1)) + 1;
                 k(A(idx2)) = k(A(idx2)) + 1;
@@ -103,14 +103,14 @@ function sim_ic_model_internal_link_v2(N, L, U, itvl, sel_type)
     %% --------------------
     xx = [0; x];
     yy = [N; y];
-    dlmwrite(sprintf('%sL%dU%dN%d.internal_link.itvl%d.%s.txt', output_dir, L, U, N, itvl, sel_type), [xx, yy], 'delimiter', '\t');
-    
+    dlmwrite(sprintf('%sL%dU%dN%d.internal_link_v2.itvl%d.%s.txt', output_dir, L, U, N, itvl, sel_type), [xx, yy], 'delimiter', '\t');
+
 
     %% --------------------
     %% plot figure
     %% --------------------
     fh = figure(1); clf;
-    
+
     lh = plot(x, y, '-bo');
     set(lh, 'MarkerSize', 10);
     legends = {'empirical data'};
@@ -142,7 +142,7 @@ function [k] = cal_k(K)
     epsilon = 0.00001;
     c = sum(K) / 2;
     n = length(K);
-    
+
     % prev_a = 0;
     % prev_dif = 0;
     prev_a_pos = 0;
@@ -156,8 +156,8 @@ function [k] = cal_k(K)
     cnt = 0;
     while abs(dif) > epsilon
         cnt = cnt + 1;
-        
-        if DEBUG3, 
+
+        if DEBUG3,
             fprintf('iter %d:\n', cnt);
             fprintf('  a = %f, dif = %f = %f-%f\n', a, dif, sum(sqrt(1 - a*K/2/c)), n-2);
         end
@@ -166,16 +166,16 @@ function [k] = cal_k(K)
         if dif > 0 & (a > prev_a_pos | prev_dif_pos < 0)
             prev_dif_pos = dif;
             prev_a_pos   = a;
-            
+
             if DEBUG3, fprintf('  new pos a = %f\n', prev_a_pos); end
 
         elseif dif < 0 & (a < prev_a_neg | prev_dif_neg > 0)
             prev_dif_neg = dif;
             prev_a_neg   = a;
-            
+
             if DEBUG3, fprintf('  new neg a = %f\n', prev_a_pos); end
         end
-            
+
 
         %% move "a" a bit
         if dif > 0
@@ -224,9 +224,9 @@ end
 
 function [n1, n2] = select_link(pp)
     DEBUG3 = 0;
-    
+
     n = sqrt(length(pp));
-    
+
     cdf = cumsum(pp);
 
     realized = rand * 2;
@@ -235,7 +235,7 @@ function [n1, n2] = select_link(pp)
     if(pp(idx) == 0)
         idx = idx + 1;
     end
-    
+
     n1 = mod(idx-1, n) + 1;
     n2 = floor((idx-1)/n) + 1;
     if DEBUG3, fprintf('  idx=%d, n=%d, n1=%d, n2=%d\n', idx, n, n1, n2); end
