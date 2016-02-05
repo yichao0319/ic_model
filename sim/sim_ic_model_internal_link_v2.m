@@ -1,25 +1,22 @@
-%% sim_ic_model_internal_link_v2(100000, 2, 8, 1, 'cal')
-%% sim_ic_model_internal_link_v2(100000, 3, 10, 1, 'cal')
-%% sim_ic_model_internal_link_v2(100000, 1, 1, 1, 'cal')
-%% sim_ic_model_internal_link_v2(100000, 1, 100000, 1, 'cal')
-%% sim_ic_model_internal_link_v2(100000, 3, 100000, 1, 'cal')
-%% sim_ic_model_internal_link_v2(100000, 1, 10, 1, 'cal')
+%% sim_ic_model_internal_link_v2(10000, 2, 8, 1)
+%% sim_ic_model_internal_link_v2(10000, 3, 10, 1)
+%% sim_ic_model_internal_link_v2(10000, 1, 1, 1)
+%% sim_ic_model_internal_link_v2(10000, 1, 10000, 1)
+%% sim_ic_model_internal_link_v2(10000, 3, 10000, 1)
 
-function sim_ic_model_internal_link_v2(N, L, U, itvl, sel_type, seed)
-    DEBUG3 = 1;
+function sim_ic_model_internal_link_v2(N, L, U, itvl, seed)
+    DEBUG3 = 0;
     % N = 100000;
     % N = 1000;
-    if nargin < 1, N = 100000; end
-    if N <= 0, N = 100000; end
+    if nargin < 1, N = 10000; end
+    if N <= 0, N = 10000; end
     if nargin < 2, L = 1; end
     if nargin < 3, U = N; end
     if nargin < 4, itvl = 1; end
-    if nargin < 5, sel_type = 'cal'; end
-    if nargin < 6, seed = 1; end
+    if nargin < 5, seed = 1; end
 
     rng(seed);
-    seed
-
+    sel_type = 'cal';
 
     output_dir = './data/';
     fig_dir = './fig/';
@@ -118,35 +115,35 @@ function sim_ic_model_internal_link_v2(N, L, U, itvl, sel_type, seed)
     %% --------------------
     %% plot figure
     %% --------------------
-    fh = figure(1); clf;
+    % fh = figure(1); clf;
 
-    lh = plot(x, y, '-bo');
-    set(lh, 'MarkerSize', 10);
-    legends = {'empirical data'};
-    lhs = [lh];
-    hold on;
+    % lh = plot(x, y, '-bo');
+    % set(lh, 'MarkerSize', 10);
+    % legends = {'empirical data'};
+    % lhs = [lh];
+    % hold on;
 
-    set(gca, 'FontSize', font_size);
-    set(gca, 'XScale', 'log');
-    set(gca, 'YScale', 'log');
-    xlabel('Node Degree', 'FontSize', font_size);
-    ylabel('Frequency', 'FontSize', font_size);
-    title(sprintf('L=%d,U=%d', L, U));
+    % set(gca, 'FontSize', font_size);
+    % set(gca, 'XScale', 'log');
+    % set(gca, 'YScale', 'log');
+    % xlabel('Node Degree', 'FontSize', font_size);
+    % ylabel('Frequency', 'FontSize', font_size);
+    % title(sprintf('L=%d,U=%d', L, U));
 
-    maxx = max(x) * 1.1;
-    minx = min(x) * 0.9;
-    maxy = max(y) * 1.1;
-    miny = min(y(y>0)) * 0.9;
-    set(gca, 'XLim', [minx maxx]);
-    set(gca, 'YLim', [miny maxy]);
-    legend(lhs, legends);
+    % maxx = max(x) * 1.1;
+    % minx = min(x) * 0.9;
+    % maxy = max(y) * 1.1;
+    % miny = min(y(y>0)) * 0.9;
+    % set(gca, 'XLim', [minx maxx]);
+    % set(gca, 'YLim', [miny maxy]);
+    % legend(lhs, legends);
 
     % print(fh, '-dpsc', sprintf('%sL%dU%dN%d.internal_link.eps', fig_dir, L, U, N));
     % print(fh, '-dpng', sprintf('%sL%dU%dN%d.internal_link.png', fig_dir, L, U, N));
 end
 
 function [k] = cal_k(K)
-    DEBUG3 = 1;
+    DEBUG3 = 0;
 
     epsilon = 0.00001;
     c = sum(K) / 2;
