@@ -6,7 +6,7 @@
 %% sim_ic_model_internal_link_v2(100000, 1, 10, 1, 'cal')
 
 function sim_ic_model_internal_link_v2(N, L, U, itvl, sel_type, seed)
-    DEBUG3 = 1;
+    DEBUG3 = 0;
     % N = 100000;
     % N = 1000;
     if nargin < 1, N = 100000; end
@@ -18,7 +18,6 @@ function sim_ic_model_internal_link_v2(N, L, U, itvl, sel_type, seed)
     if nargin < 6, seed = 1; end
 
     rng(seed);
-    seed
 
 
     output_dir = './data/';
@@ -146,7 +145,7 @@ function sim_ic_model_internal_link_v2(N, L, U, itvl, sel_type, seed)
 end
 
 function [k] = cal_k(K)
-    DEBUG3 = 1;
+    DEBUG3 = 0;
 
     epsilon = 0.00001;
     c = sum(K) / 2;
