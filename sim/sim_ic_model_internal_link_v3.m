@@ -12,7 +12,8 @@ function sim_ic_model_internal_link_v3(L, U, itvl, seed)
     if nargin < 3, itvl = 1; end
     if nargin < 4, seed = 1; end
 
-    Ns = [1:10] * 10000;
+    % Ns = [1:10] * 10000;
+    Ns = [1:4] * 2000;
 
     rng(seed);
     sel_type = 'cal';
