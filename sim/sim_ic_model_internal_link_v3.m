@@ -1,8 +1,8 @@
-%% sim_ic_model_internal_link_v(2, 8, 1)
-%% sim_ic_model_internal_link_v(3, 10, 1)
-%% sim_ic_model_internal_link_v(1, 1, 1)
-%% sim_ic_model_internal_link_v(1, 10000, 1)
-%% sim_ic_model_internal_link_v(3, 10000, 1)
+%% sim_ic_model_internal_link_v3(2, 8, 1)
+%% sim_ic_model_internal_link_v3(3, 10, 1)
+%% sim_ic_model_internal_link_v3(1, 1, 1)
+%% sim_ic_model_internal_link_v3(1, 100000, 1)
+%% sim_ic_model_internal_link_v3(3, 100000, 1)
 
 function sim_ic_model_internal_link_v3(L, U, itvl, seed)
     DEBUG3 = 0;
