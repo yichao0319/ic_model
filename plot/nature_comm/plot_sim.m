@@ -4,11 +4,11 @@
 
 % function plot_sim_v3_condor_results(N, L, U, nseed)
 function plot_sim()
-    plot_single(100000, 1, 1, 100)
-    plot_single(100000, 1, 100000, 100)
-    plot_single(100000, 2, 8, 100)
+    % plot_single(100000, 1, 1, 100)
+    % plot_single(100000, 1, 100000, 100)
+    % plot_single(100000, 2, 8, 100)
     plot_single(100000, 3, 10, 100)
-    plot_single(100000, 3, 100000, 100)
+    % plot_single(100000, 3, 100000, 100)
 end
 
 function plot_single(N, L, U, nseed)
