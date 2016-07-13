@@ -1,0 +1,14 @@
+########################################
+## Yi-Chao Chen @ Huawei
+########################################
+
+PNAS revision: markove model w/o internal link
+
+- Main code: fit_one.m
+
+
+########################################
+
+The 2nd version: w/ internal link
+
+- Main code: fit_one_internal_link.m
