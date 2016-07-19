@@ -20,6 +20,7 @@ function plot_sim_internal_link_results(Ns, L, U, itvl, sel_type)
     for ni = 1:length(Ns)
         N = Ns(ni);
         plot_sim_internal_link_one_result(N, L, U, itvl, sel_type);
+        % pause
     end
 end
 
@@ -66,6 +67,9 @@ function plot_sim_internal_link_one_result(N, L, U, itvl, sel_type)
     %% --------------------
 
     data = load(sprintf('%s%s.internal_link_v3.itvl%d.%s.txt', input_dir, filename, itvl, sel_type));
+
+    % idx = find(data(:,1) > 0);
+    % data = data(idx, :);
     % a = tmp(1);
     % exponent = tmp(2);
 
