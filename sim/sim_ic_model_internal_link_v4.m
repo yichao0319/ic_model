@@ -70,7 +70,7 @@ function sim_ic_model_internal_link_v4(L, U, lambda, eta, seed)
     i = 2;
     for j = 3:narr
         % fprintf('%d / %d\n', i, N);
-        show_progress(i, narr, 1);
+        show_progress(i, narr, 2);
 
 
         %% =====================
