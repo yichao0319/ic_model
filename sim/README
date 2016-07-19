@@ -29,5 +29,10 @@ plot_sim_internal_link_v2_results.m
   Use the probability given by David to build interal links.
 
 sim_ic_model_internal_link_v3.m
+plot_sim_internal_link_v3_results.m
   Improve v2 by recording intermediate node number results.
+
+sim_ic_model_internal_link_v4.m
+plot_sim_internal_link_v4_results.m
+  Fix v3 by using Poisson distribution to decide the arrival rate of external/internal links.
 
