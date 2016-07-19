@@ -1,20 +1,20 @@
-%% fit_one('coauthor')
-%% fit_one('dblp')
-%% fit_one('coauthor_network')
-%% fit_one('dblp_network')
-%% fit_one('aps')
-%% fit_one('patent')
-%% fit_one('facebook')
-%% fit_one('twitter')
-%% fit_one('rome')
-%% fit_one('beijing')
-%% fit_one('sf')
-%% fit_one('sim', 100000, 1, 1, 100)
-%% fit_one('sim', 100000, 1, 100000, 100)
-%% fit_one('sim', 100000, 2, 8, 100)
-%% fit_one('sim', 100000, 3, 10, 100)
-%% fit_one('sim', 100000, 3, 100000, 100)
-function [L, U, errs] = fit_one(name, N, L, U, nseed)
+%% fit_one_internal_link('coauthor')
+%% fit_one_internal_link('dblp')
+%% fit_one_internal_link('coauthor_network')
+%% fit_one_internal_link('dblp_network')
+%% fit_one_internal_link('aps')
+%% fit_one_internal_link('patent')
+%% fit_one_internal_link('facebook')
+%% fit_one_internal_link('twitter')
+%% fit_one_internal_link('rome')
+%% fit_one_internal_link('beijing')
+%% fit_one_internal_link('sf')
+%% fit_one_internal_link('sim', 30000, 2, 8, 1)
+%% fit_one_internal_link('sim', 30000, 1, 100000, 1)
+%% fit_one_internal_link('sim', 30000, 2, 8, 1)
+%% fit_one_internal_link('sim', 30000, 3, 10, 1)
+%% fit_one_internal_link('sim', 30000, 3, 100000, 1)
+function [L, U, errs] = fit_one_internal_link(name, N, L, U, itvl)
     addpath('./old/');
 
     %% --------------------
@@ -47,22 +47,24 @@ function [L, U, errs] = fit_one(name, N, L, U, nseed)
     %% Check input
     %% --------------------
     if nargin < 1, error('PARAMETERS: NAME, N, L, U, NSEED'); end
-    if nargin < 2, N = 100000; end
-    if N <= 0, N = 100000; end
+    if nargin < 2, N = 30000; end
+    if N <= 0, N = 30000; end
     if nargin < 3, L = 5; end
     if nargin < 4, U = 10; end
-    if nargin < 5, nseed = 1; end
+    if nargin < 5, itvl = 1; end
+
 
     param.L = L;
     param.U = U;
     param.N = N;
-    param.nseed = nseed;
+    param.itvl = itvl;
 
 
     %% --------------------
     %% Main starts
     %% --------------------
-    [data, data2] = get_data(name, param);
+    [data] = get_data_internal_link(name, param);
+    data2 = data;
     config = get_config(name, param);
     % data = data2;
 
@@ -72,15 +74,26 @@ function [L, U, errs] = fit_one(name, N, L, U, nseed)
     data = data(idx,:);
     %% --------------
 
+    nlinks = sum(data(:,1).*data(:,2))/2;
+    param.lambda = N - 1; %% external edge arrival rate: # external edges
+    param.eta    = nlinks - param.lambda; %% external edge arrival rate: # internal edges
+
+    % param.lambda = 2;
+    % param.eta    = 2;
+
     if DEBUG3
-        fprintf('  data size=%dx%d, min/max degree=%d/%d, min/max prob=%g/%g\n', size(data), min(data(:,1)), max(data(:,1)), min(data(find(data(:,2)>0),2)), max(data(:,2)));
+        fprintf('  data size=%dx%d, #nodes=%d, #links=%d, min/max degree=%d/%d, min/max prob=%g/%g\n', size(data), N, nlinks, min(data(:,1)), max(data(:,1)), min(data(find(data(:,2)>0),2)), max(data(:,2)));
+
+        fprintf('    lambda=%f, eta=%f\n', param.lambda, param.eta);
+
 
         fprintf('  data2 size=%dx%d, min/max degree=%d/%d\n', size(data2), min(data2(:,1)), max(data2(:,1)));
     end
 
+
     %%%%%%%%%%%%%%%%%%%%%%%%%%%
-    orig_x = data(:,1);
-    data(:,1) = 1:size(data,1);
+    % orig_x = data(:,1);
+    % data(:,1) = 1:size(data,1);
     % idx = find(data(:,2) > 0);
     % data = data(idx, :);
     %%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -91,6 +104,44 @@ function [L, U, errs] = fit_one(name, N, L, U, nseed)
     set(gca, 'xscale', 'log');
     set(gca, 'yscale', 'log');
     title(name);
+
+
+    x = data(:,1);
+    y = data(:,2) / sum(data(:,2));
+
+    fit_data = fit_3seg_curve_auto_sim_internal_link(x, y, param.L, param.U, param.N, param.lambda, param.eta, 0);
+
+
+    fig_idx = fig_idx + 1;
+    fh = figure(fig_idx); clf;
+    plot(x, y, 'bo');
+    hold on;
+    lh = plot(fit_data.xseg1, fit_data.est_yseg1, '-g');
+    set(lh, 'LineWidth', 3); set(lh, 'Color', colors{3});
+    lh = plot([fit_data.xseg2; fit_data.xseg3], fit_data.est_yseg1_others, ':g');
+    set(lh, 'LineWidth', 3); set(lh, 'Color', colors{3});
+    lh = plot(fit_data.xseg2, fit_data.est_yseg2, '-r');
+    set(lh, 'LineWidth', 3); set(lh, 'Color', colors{1});
+    lh = plot([fit_data.xseg1; fit_data.xseg3], fit_data.est_yseg2_others, ':r');
+    set(lh, 'LineWidth', 3); set(lh, 'Color', colors{1});
+    lh = plot(fit_data.xseg3, fit_data.est_yseg3, '-y');
+    set(lh, 'LineWidth', 3); set(lh, 'Color', colors{5});
+    lh = plot([fit_data.xseg1; fit_data.xseg2], fit_data.est_yseg3_others, ':y');
+    set(lh, 'LineWidth', 3); set(lh, 'Color', colors{5});
+    set(gca, 'xscale', 'log');
+    set(gca, 'yscale', 'log');
+    % set(gca, 'ylim', [min(y(y>0)) max(y)*1.1]);
+    set(gca, 'ylim', [min(y(y>0)) Inf]);
+    title(name);
+
+    % fit_data.xseg3'
+    % fit_data.est_yseg3'
+    return
+
+
+
+
+
 
 
     %% --------------------
@@ -199,7 +250,7 @@ function [L, U, errs] = fit_one(name, N, L, U, nseed)
     % L = x_min;
     % U = x_max;
     if strcmp(name, 'sim')
-        [fit_data, fit_param, fit_data2, fit_param2] = fit_3seg_curve_auto_sim(x, y, x2, y2, x_min, x_max, param.N, 0);
+        [fit_data, fit_param, fit_data2, fit_param2] = fit_3seg_curve_auto_sim_internal_link(x, y, x2, y2, x_min, x_max, param.N, 0);
     else
         [fit_data] = fit_3seg_curve_auto_exp(x, y, x_min, x_max, 0);
     end
@@ -209,45 +260,45 @@ function [L, U, errs] = fit_one(name, N, L, U, nseed)
     %% ----------------------
     %% Output Results
     %% ----------------------
-    if DEBUG2, fprintf('Output Results\n'); end
+    % if DEBUG2, fprintf('Output Results\n'); end
 
-    filename = [output_dir name];
-    if strcmp(name, 'sim')
-        filename = sprintf('%ssim.N%d.L%d.U%d', output_dir, N, L, U);
-    end
-
-
-    if param.L~=param.U
-        dlmwrite([filename '.emp.txt'], [x, y], 'delimiter', '\t');
-        dlmwrite([filename '.Dmin.txt'], [x_mins', Dmins'], 'delimiter', '\t');
-        dlmwrite([filename '.Dmax.txt'], [x_maxs', Dmaxs'], 'delimiter', '\t');
+    % filename = [output_dir name];
+    % if strcmp(name, 'sim')
+    %     filename = sprintf('%ssim.N%d.L%d.U%d', output_dir, N, L, U);
+    % end
 
 
-        if param.L == 1 & param.U == param.N
-            dlmwrite([filename '.phase2-2.txt'], [x, fit_data.est_y], 'delimiter', '\t');
-        elseif param.L > 1 & param.U == param.N
-            dlmwrite([filename '.phase1-1.txt'], [fit_data.xseg1, fit_data.est_yseg1], 'delimiter', '\t');
-            dlmwrite([filename '.phase1-2.txt'], [fit_data.xseg2, fit_data.est_yseg1_others], 'delimiter', '\t');
-            dlmwrite([filename '.phase2-2.txt'], [fit_data.xseg2(2:end), fit_data.est_yseg2(2:end)], 'delimiter', '\t');
-            dlmwrite([filename '.phase2-1.txt'], [fit_data.xseg1, fit_data.est_yseg2_others], 'delimiter', '\t');
-        else
-            dlmwrite([filename '.phase1-1.txt'], [fit_data.xseg1, fit_data.est_yseg1], 'delimiter', '\t');
-            dlmwrite([filename '.phase1-23.txt'], [[fit_data.xseg2; fit_data.xseg3], fit_data.est_yseg1_others], 'delimiter', '\t');
-            dlmwrite([filename '.phase2-2.txt'], [fit_data.xseg2(2:end), fit_data.est_yseg2(2:end)], 'delimiter', '\t');
-            dlmwrite([filename '.phase2-13.txt'], [[fit_data.xseg1; fit_data.xseg3], fit_data.est_yseg2_others], 'delimiter', '\t');
-            dlmwrite([filename '.phase3-3.txt'], [fit_data.xseg3, fit_data.est_yseg3], 'delimiter', '\t');
-            dlmwrite([filename '.phase3-12.txt'], [[fit_data.xseg1; fit_data.xseg2], fit_data.est_yseg3_others], 'delimiter', '\t');
-        end
-    else
-        % [fit_data1] = fit_exp(data, L, U, N, fig_param);
-        % plot_lognormal(data, L, U, N, fig_param);
-        dlmwrite([filename '.exp.est.txt'], [x, fit_data.est_y], 'delimiter', '\t');
-        dlmwrite([filename '.exp.emp.txt'], [x, y], 'delimiter', '\t');
+    % if param.L~=param.U
+    %     dlmwrite([filename '.emp.txt'], [x, y], 'delimiter', '\t');
+    %     dlmwrite([filename '.Dmin.txt'], [x_mins', Dmins'], 'delimiter', '\t');
+    %     dlmwrite([filename '.Dmax.txt'], [x_maxs', Dmaxs'], 'delimiter', '\t');
 
-        % fit_poisson(data2, L, U, N, fig_param);
-        dlmwrite([filename '.poisson.est.txt'], [x2, fit_data2.est_y], 'delimiter', '\t');
-        dlmwrite([filename '.poisson.emp.txt'], [x2, y2], 'delimiter', '\t');
-    end
+
+    %     if param.L == 1 & param.U == param.N
+    %         dlmwrite([filename '.phase2-2.txt'], [x, fit_data.est_y], 'delimiter', '\t');
+    %     elseif param.L > 1 & param.U == param.N
+    %         dlmwrite([filename '.phase1-1.txt'], [fit_data.xseg1, fit_data.est_yseg1], 'delimiter', '\t');
+    %         dlmwrite([filename '.phase1-2.txt'], [fit_data.xseg2, fit_data.est_yseg1_others], 'delimiter', '\t');
+    %         dlmwrite([filename '.phase2-2.txt'], [fit_data.xseg2(2:end), fit_data.est_yseg2(2:end)], 'delimiter', '\t');
+    %         dlmwrite([filename '.phase2-1.txt'], [fit_data.xseg1, fit_data.est_yseg2_others], 'delimiter', '\t');
+    %     else
+    %         dlmwrite([filename '.phase1-1.txt'], [fit_data.xseg1, fit_data.est_yseg1], 'delimiter', '\t');
+    %         dlmwrite([filename '.phase1-23.txt'], [[fit_data.xseg2; fit_data.xseg3], fit_data.est_yseg1_others], 'delimiter', '\t');
+    %         dlmwrite([filename '.phase2-2.txt'], [fit_data.xseg2(2:end), fit_data.est_yseg2(2:end)], 'delimiter', '\t');
+    %         dlmwrite([filename '.phase2-13.txt'], [[fit_data.xseg1; fit_data.xseg3], fit_data.est_yseg2_others], 'delimiter', '\t');
+    %         dlmwrite([filename '.phase3-3.txt'], [fit_data.xseg3, fit_data.est_yseg3], 'delimiter', '\t');
+    %         dlmwrite([filename '.phase3-12.txt'], [[fit_data.xseg1; fit_data.xseg2], fit_data.est_yseg3_others], 'delimiter', '\t');
+    %     end
+    % else
+    %     % [fit_data1] = fit_exp(data, L, U, N, fig_param);
+    %     % plot_lognormal(data, L, U, N, fig_param);
+    %     dlmwrite([filename '.exp.est.txt'], [x, fit_data.est_y], 'delimiter', '\t');
+    %     dlmwrite([filename '.exp.emp.txt'], [x, y], 'delimiter', '\t');
+
+    %     % fit_poisson(data2, L, U, N, fig_param);
+    %     dlmwrite([filename '.poisson.est.txt'], [x2, fit_data2.est_y], 'delimiter', '\t');
+    %     dlmwrite([filename '.poisson.emp.txt'], [x2, y2], 'delimiter', '\t');
+    % end
 
 
 
@@ -330,7 +381,7 @@ function [L, U, errs] = fit_one(name, N, L, U, nseed)
 
     %% our model
     midx = 1;
-    models{midx} = 'MC';
+    models{midx} = 'IC';
 
     est_y = [fit_data.est_yseg1; fit_data.est_yseg2; fit_data.est_yseg3];
     est_y = est_y / sum(est_y);
@@ -391,83 +442,29 @@ function [L, U, errs] = fit_one(name, N, L, U, nseed)
     [aics(midx), bics(midx)] = aicbic(logL, k, n);
 
 
-    %% Shifted Power-Law
+    %% Power-Law latest literature
     midx = midx + 1;
-    models{midx} = 'PLS';
+    models{midx} = 'PLN';
 
     x_nz = x(find(y>0));
     y_nz = y(find(y>0));
-    fit_param_plshift = fit_pl_criticality_log(x_nz, y_nz);
-    est_plshift_y = close_form_pl_criticality(fit_param_plshift, x);
-    est_plshift_y = est_plshift_y / sum(est_plshift_y);
+    fit_param_plnew = fit_pl_new_log(x_nz, y_nz);
+    est_plnew_y = close_form_pl_new(fit_param_plnew, x);
+    est_plnew_y = est_plnew_y / sum(est_plnew_y);
     % fh = figure(4); clf;
     % plot(x, y, 'bo');
     % hold on;
-    % plot(x, est_plshift_y, '-r');
+    % plot(x, est_plnew_y, '-r');
     % set(gca, 'xscale', 'log');
     % set(gca, 'yscale', 'log');
     % set(gca, 'ylim', [min(y(y>0)) max(y)*1.1]);
     % pause
-    est_err(midx) = cal_err(est_plshift_y, y);
-    % est_ks_err(midx) = max(abs(est_plshift_y - y));
-    est_ks_err(midx) = ks_dist(est_plshift_y, y);
+    est_err(midx) = cal_err(est_plnew_y, y);
+    % est_ks_err(midx) = max(abs(est_plnew_y - y));
+    est_ks_err(midx) = ks_dist(est_plnew_y, y);
     k    = 3+1;
-    n    = length(est_plshift_y);
-    % logL = log10(mean(est_plshift_y.*y));
-    logL = -log10(est_err(midx));
-    [aics(midx), bics(midx)] = aicbic(logL, k, n);
-
-
-    %% shifted Power-Law with geometric cutoff
-    midx = midx + 1;
-    models{midx} = 'PLSG';
-
-    x_nz = x(find(y>0));
-    y_nz = y(find(y>0));
-    fit_param_plshiftgeom = fit_pl_shift_geom_cutoff_log(x_nz, y_nz);
-    est_plshiftgeom_y = close_form_pl_shift_geom_cutoff(fit_param_plshiftgeom, x);
-    est_plshiftgeom_y = est_plshiftgeom_y / sum(est_plshiftgeom_y);
-    % fh = figure(4); clf;
-    % plot(x, y, 'bo');
-    % hold on;
-    % plot(x, est_plshiftgeom_y, '-r');
-    % set(gca, 'xscale', 'log');
-    % set(gca, 'yscale', 'log');
-    % set(gca, 'ylim', [min(y(y>0)) max(y)*1.1]);
-    % pause
-    est_err(midx) = cal_err(est_plshiftgeom_y, y);
-    % est_ks_err(midx) = max(abs(est_plshiftgeom_y - y));
-    est_ks_err(midx) = ks_dist(est_plshiftgeom_y, y);
-    k    = 3+1;
-    n    = length(est_plshiftgeom_y);
-    % logL = log10(mean(est_plshiftgeom_y.*y));
-    logL = -log10(est_err(midx));
-    [aics(midx), bics(midx)] = aicbic(logL, k, n);
-
-
-    %% Power-Law with geometric cutoff and stretched exponential
-    midx = midx + 1;
-    models{midx} = 'PLGS';
-
-    x_nz = x(find(y>0));
-    y_nz = y(find(y>0));
-    fit_param_plcrit = fit_pl_criticality_log(x_nz, y_nz);
-    est_plcrit_y = close_form_pl_criticality(fit_param_plcrit, x);
-    est_plcrit_y = est_plcrit_y / sum(est_plcrit_y);
-    % fh = figure(4); clf;
-    % plot(x, y, 'bo');
-    % hold on;
-    % plot(x, est_plcrit_y, '-r');
-    % set(gca, 'xscale', 'log');
-    % set(gca, 'yscale', 'log');
-    % set(gca, 'ylim', [min(y(y>0)) max(y)*1.1]);
-    % pause
-    est_err(midx) = cal_err(est_plcrit_y, y);
-    % est_ks_err(midx) = max(abs(est_plcrit_y - y));
-    est_ks_err(midx) = ks_dist(est_plcrit_y, y);
-    k    = 3+1;
-    n    = length(est_plcrit_y);
-    % logL = log10(mean(est_plcrit_y.*y));
+    n    = length(est_plnew_y);
+    % logL = log10(mean(est_plnew_y.*y));
     logL = -log10(est_err(midx));
     [aics(midx), bics(midx)] = aicbic(logL, k, n);
 
