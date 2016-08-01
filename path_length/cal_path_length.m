@@ -11,13 +11,13 @@
 %%   cal_path_length('topology1')
 %%   cal_path_length('L1U100000N30000.internal_link_v4.l1.00.e1.00.cal.topo')
 %%   cal_path_length('L3U10N30000.internal_link_v4.l1.00.e1.00.cal.topo')
-%%   cal_path_length('L2U8N20000.internal_link_v4.l1.00.e1.00.cal.topo')
+%%   cal_path_length('L2U8N20000.internal_link_v4.l1.00.e1.00.cal.topo', 20000)
 %%   cal_path_length('L3U100000N30000.internal_link_v4.l1.00.e1.00.cal.topo')
 %%   cal_path_length('L1U1N30000.internal_link_v4.l1.00.e1.00.cal.topo')
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [path_length] = cal_path_length(filename)
+function [path_length] = cal_path_length(filename, num)
     % addpath('../utils');
 
     %% --------------------
@@ -53,7 +53,7 @@ function [path_length] = cal_path_length(filename)
     %% --------------------
     %% Check input
     %% --------------------
-    % if nargin < 1, arg = 1; end
+    if nargin < 2, num = -1; end
 
 
     %% --------------------
@@ -62,6 +62,10 @@ function [path_length] = cal_path_length(filename)
     topology = load(sprintf('%s%s.txt', input_dir, filename));
     topology(topology>0) = 1;
     N = size(topology, 1);
+    if num > 0 & num < N
+        topology = topology(1:num, 1:num);
+        N = num;
+    end
     paths = graphallshortestpaths(sparse(topology));
 
     for ni = 1:N
@@ -74,10 +78,6 @@ function [path_length] = cal_path_length(filename)
         max_pl(ni) = max(pls);
         min_pl(ni) = min(pls);
     end
-
-    dlmwrite(sprintf('%s%s.path_length.avg.txt'), [avg_pl], 'delimiter', '\t');
-    dlmwrite(sprintf('%s%s.path_length.max.txt'), [max_pl], 'delimiter', '\t');
-
 
     [f{1}, x{1}] = ecdf(avg_pl);
     [f{2}, x{2}] = ecdf(max_pl);
