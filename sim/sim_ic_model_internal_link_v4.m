@@ -154,8 +154,8 @@ function sim_ic_model_internal_link_v4(L, U, lambda, eta, seed)
                     k(1:i)
                 end
 
-                kk = cal_k(k(1:i));
-                p  = cal_p(k(1:i), kk);
+                kk = cal_k(k_hat(1:i));
+                p  = cal_p(k_hat(1:i), kk);
                 pp = cal_pp(p);
                 % sum(pp)/2 == 1
                 [idx1, idx2] = select_link(pp);
