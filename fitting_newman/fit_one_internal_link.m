@@ -9,12 +9,11 @@
 %% fit_one_internal_link('rome')
 %% fit_one_internal_link('beijing')
 %% fit_one_internal_link('sf')
-%% fit_one_internal_link('sim', 30000, 2, 8, 1)
-%% fit_one_internal_link('sim', 30000, 1, 100000, 1)
-%% fit_one_internal_link('sim', 30000, 2, 8, 1)
-%% fit_one_internal_link('sim', 30000, 3, 10, 1)
-%% fit_one_internal_link('sim', 30000, 3, 100000, 1)
-function [L, U, errs] = fit_one_internal_link(name, N, L, U, itvl)
+%% fit_one_internal_link('sim', 20000, 1, 100000, 1, 1)
+%% fit_one_internal_link('sim', 20000, 2, 8, 1, 1)
+%% fit_one_internal_link('sim', 20000, 3, 10, 1, 1)
+%% fit_one_internal_link('sim', 20000, 3, 100000, 1, 1)
+function [L, U, errs] = fit_one_internal_link(name, N, L, U, lambda, eta)
     addpath('./old/');
 
     %% --------------------
@@ -51,13 +50,15 @@ function [L, U, errs] = fit_one_internal_link(name, N, L, U, itvl)
     if N <= 0, N = 30000; end
     if nargin < 3, L = 5; end
     if nargin < 4, U = 10; end
-    if nargin < 5, itvl = 1; end
+    if nargin < 5, lambda = 1; end
+    if nargin < 6, eta = 1; end
 
 
     param.L = L;
     param.U = U;
     param.N = N;
-    param.itvl = itvl;
+    param.lambda = lambda;
+    param.eta = eta;
 
 
     %% --------------------
@@ -90,6 +91,7 @@ function [L, U, errs] = fit_one_internal_link(name, N, L, U, itvl)
         fprintf('  data2 size=%dx%d, min/max degree=%d/%d\n', size(data2), min(data2(:,1)), max(data2(:,1)));
     end
 
+    % return
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%
     % orig_x = data(:,1);
