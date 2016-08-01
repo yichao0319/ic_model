@@ -75,6 +75,10 @@ function [path_length] = cal_path_length(filename)
         min_pl(ni) = min(pls);
     end
 
+    dlmwrite(sprintf('%s%s.path_length.avg.txt'), [avg_pl], 'delimiter', '\t');
+    dlmwrite(sprintf('%s%s.path_length.max.txt'), [max_pl], 'delimiter', '\t');
+
+
     [f{1}, x{1}] = ecdf(avg_pl);
     [f{2}, x{2}] = ecdf(max_pl);
     % [f{3}, x{3}] = ecdf(min_pl);
