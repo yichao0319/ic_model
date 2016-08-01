@@ -1,17 +1,18 @@
 %% get_data
 function [data] = get_data_internal_link(name, para)
     if strcmp(name, 'sim')
-        [data] = get_sim_data(para.L, para.U, para.N, para.itvl);
+        [data] = get_sim_data(para.L, para.U, para.N, para.lambda, para.eta);
     else
         [data] = get_exp_data(name);
     end
 end
 
 
-function [data] = get_sim_data(L, U, N, itvl)
+function [data] = get_sim_data(L, U, N, lambda, eta)
     input_dir = '../sim/data/';
 
-    data = load(sprintf('%sL%dU%dN%d.internal_link_v3.itvl%d.cal.txt', input_dir, L, U, N, itvl));
+    % data = load(sprintf('%sL%dU%dN%d.internal_link_v3.itvl%d.cal.txt', input_dir, L, U, N, itvl));
+    data = load(sprintf('%sL%dU%dN%d.internal_link_v4.l%.2f.e%.2f.cal.txt', input_dir, L, U, N, lambda, eta));
 end
 
 

@@ -157,7 +157,7 @@ function sim_ic_model_internal_link_v4(L, U, lambda, eta, seed)
                 kk = cal_k(k(1:i));
                 p  = cal_p(k(1:i), kk);
                 pp = cal_pp(p);
-                % sum(pp)/2 == 1
+                % fprintf('sum of prob=%.2f\n', sum(pp)/2);
                 [idx1, idx2] = select_link(pp);
             else
                 error('wrong selection type');
