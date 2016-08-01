@@ -9,6 +9,11 @@
 %%
 %% example:
 %%   cal_path_length('topology1')
+%%   cal_path_length('L1U100000N30000.internal_link_v4.l1.00.e1.00.cal.topo')
+%%   cal_path_length('L3U10N30000.internal_link_v4.l1.00.e1.00.cal.topo')
+%%   cal_path_length('L2U8N20000.internal_link_v4.l1.00.e1.00.cal.topo')
+%%   cal_path_length('L3U100000N30000.internal_link_v4.l1.00.e1.00.cal.topo')
+%%   cal_path_length('L1U1N30000.internal_link_v4.l1.00.e1.00.cal.topo')
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -29,7 +34,8 @@ function [path_length] = cal_path_length(filename)
     %% Constant
     %% --------------------
     input_dir  = '../sim/data/';
-    output_dir = './figs/';
+    output_dir = './results/';
+    fig_dir = './figs/';
 
     font_size = 28;
     colors   = {'r', 'b', [0 0.8 0], 'm', [1 0.85 0], [0 0 0.47], [0.45 0.17 0.48], 'k'};
@@ -89,5 +95,8 @@ function [path_length] = cal_path_length(filename)
     legend({'avg', 'max'}, 'Location', 'SouthEast');
     title('Path Length');
     % print(fh, '-dpsc', 'name.ps');
-    print(fh, '-dpng', sprintf('%s%s.png', output_dir, filename));
+    print(fh, '-dpng', sprintf('%s%s.png', fig_dir, filename));
+    dlmwrite(sprintf('%s%s.cdf.avg.txt', output_dir, filename), [x{1} f{1}], 'delimiter', '\t');
+    dlmwrite(sprintf('%s%s.cdf.max.txt', output_dir, filename), [x{2} f{2}], 'delimiter', '\t');
+
 end
